@@ -6,7 +6,7 @@ import { simpleUpdate,criticalUpdate } from '../controller/updateEventController
 
 const router = express.Router();
 
-router.post('/simple',protectRoute,simpleUpdate);
-router.post('/critical',protectRoute,criticalUpdate);
+router.put('/simple/:eventId',protectRoute,simpleUpdate);
+router.put('/critical/:eventId',protectRoute,criticalUpdate);
 
 export default router;

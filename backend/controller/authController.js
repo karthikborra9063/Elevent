@@ -1,38 +1,72 @@
-import organizer from '../models/organizer_model.js';
+import organizer from '../models/organizerModel.js';
 import bcrypt from 'bcrypt';
 import generateTokenAndSetCookie from '../lib/utils/generateToken.js';
 
-export const organizerSignup = async(req,res)=>{
-    try{
-        const {username,password,email} = req.body;
-        if(password.length <6){
-            return res.status(400).json({error:'password length should be more than 6 characters'});
+export const organizerSignup = async (req, res) => {
+    try {
+        const {
+            username, password, email, mobileNumber, address, profileImg, coverImage, experience, acheivments, about
+        } = req.body;
+        const { street, city, state, postalCode, country } = address;
+
+        if (password.length < 6) {
+            return res.status(400).json({ error: 'Password length should be more than 6 characters' });
         }
-        const existingUser = await organizer.findOne({username});
-        if(existingUser){
-            return res.status(400).json({error:"User already exists"});
+
+        const existingUser = await organizer.findOne({ username });
+        if (existingUser) {
+            return res.status(400).json({ error: "User already exists" });
         }
-        const existingEmail = await organizer.findOne({email});
-        if(existingEmail){
-            return res.status(400).json({error:"Email already exists"});
+
+        const existingEmail = await organizer.findOne({ email });
+        if (existingEmail) {
+            return res.status(400).json({ error: "Email already exists" });
+        }
+        if(!mobileNumber){
+            return res.status(400).json({ error:"Mobile number must be provided" });
+        }
+        if(!street){
+            return res.status(404).json({message:"event street should be provided"});
+        }
+        if(!city){
+            return res.status(404).json({message:"event  city should be provided"});
+        }
+        if(!postalCode){
+            return res.status(404).json({message:"event postal code should be provided"});
+        }
+        if(!state){
+            return res.status(404).json({message:"event state should  be provided"});
+        }
+        if(!country){
+            return res.status(404).json({message:"event country should be provided"});
         }
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
-        const newOrganizer = await organizer({
-            username:username,
-            email:email,
-            password:hashPassword,
+
+        const newOrganizer = new organizer({
+            username,
+            email,
+            password: hashPassword,
+            mobileNumber,
+            address,
+            profileImg,
+            coverImage,
+            experience,
+            acheivments,
+            about
         });
+
         await newOrganizer.save();
-        generateTokenAndSetCookie(newOrganizer._id,res);
+        generateTokenAndSetCookie(newOrganizer._id, res);
+
         return res.status(200).json({
-            success:"user created successfully",
-        })
+            success: "User created successfully",
+        });
+    } catch (err) {
+        return res.status(500).json({ error: `Error occurred - ${err.message}` });
     }
-    catch(err){
-        console.error(`Error has occued-${err.message}`);
-    }
-}
+};
+
 export const organizerLogin=async (req, res) => {
     try{
         const {username, password} = req.body;

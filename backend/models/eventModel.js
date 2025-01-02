@@ -18,10 +18,22 @@ const eventSchema = new mongoose.Schema({
     startDate:{
         type:mongoose.Schema.Types.Date,
         required:true,
+        validate: {
+            validator: function (value) {
+            return !isNaN(new Date(value).getTime());
+        },
+            message: "Invalid date format",
+        },
     },
     endDate:{
         type:mongoose.Schema.Types.Date,
         required:true,
+        validate: {
+            validator: function (value) {
+            return !isNaN(new Date(value).getTime()); 
+            },
+            message: "Invalid date format",
+        },
     },
     duration:{
         type:Number,
@@ -46,18 +58,39 @@ const eventSchema = new mongoose.Schema({
     ticketsRequired:{
         type:Boolean,
         default:false,
+        set: (value) => {
+            if (typeof value === 'string') {
+              return value.toLowerCase() === 'true'; 
+            }
+            return Boolean(value);
+        }
     },
     price:{
         type:Number,
         default:0,
+        set: (value) => parseFloat(value),
+        validate: {
+            validator: (value) => !isNaN(value),
+            message: 'Ticket price must be a valid number.'
+        },
     },
     maxAttendees:{
         type:Number,
         required:true,
+        set: (value) => parseFloat(value),
+        validate: {
+            validator: (value) => !isNaN(value),
+            message: 'Ticket price must be a valid number.'
+        },
     },
     currentAttendees:{
         type:Number,
         default:0,
+        set: (value) => parseFloat(value),
+        validate: {
+            validator: (value) => !isNaN(value),
+            message: 'Ticket price must be a valid number.'
+        },
     },
     // images:[{
     //     type:String,
@@ -83,20 +116,17 @@ const eventSchema = new mongoose.Schema({
     roar:{
         type:String,
         default:"Event not started yet"
-    }
+    },
     // attedees:[{
     //     type:mongoose.Schema.Types.ObjectId,
     //     ref:'attendees'
     // }]
-},{timestamps:true})
-eventSchema.pre('save', function(next){
-    if(this.startDate&&this.endDate){
-        this.duration=this.endDate-this.startDate;
-        if(this.duration<=0){
-            return next(new Error("End date must be after the start date"));
-        }
+},{timestamps:true});
+eventSchema.pre("save", function (next) {
+    if (this.startTime >= this.endTime) {
+      return next(new Error("Start time must be before end time"));
     }
     next();
-})
+});
 const event = mongoose.model('event',eventSchema);
 export default event
