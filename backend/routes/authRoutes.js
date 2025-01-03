@@ -1,10 +1,10 @@
 import express  from 'express';
-import {organizerSignup,organizerLogin,organizerLogout} from '../controller/authController.js';
 
+import organizerAuthRouter from './organizerAuthRouter.js'
+import adminAuthRouter from './adminAuthRoutes.js'
 
 const router = express.Router();
 
-router.post('/signup',organizerSignup);
-router.post('/login',organizerLogin);
-router.get('/logout',organizerLogout);
+router.use('/organizer',organizerAuthRouter);
+router.use('/admin',adminAuthRouter);
 export default router;

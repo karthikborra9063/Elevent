@@ -113,6 +113,14 @@ const eventSchema = new mongoose.Schema({
         enum:['pending','approoved','cancled','completed'],
         default:"pending"
     },
+    approvedBy:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Admin'
+    },
+    canceledBy:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Admin'
+    },
     roar:{
         type:String,
         default:"Event not started yet"
