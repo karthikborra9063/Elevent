@@ -27,4 +27,4 @@ message:{
 }
 });
 
-export default mongoose.model('Notification', notificationSchema);
+export default mongoose.model('OrganizerNotification', notificationSchema);

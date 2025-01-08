@@ -3,10 +3,10 @@ import adminModel from '../models/adminModel.js'
 import eventModel from '../models/eventModel.js'
 import whiteListSchema from '../models/whiteListSchema.js'
 import organizernotificationModel from '../models/organizerNotificationModel.js'
+import adminNotificationModel from '../models/adminNotificationModel.js'
 
 export const approveEvent = async (req, res) => {
 
-    // an event approval and payment status can be changed by only superAdmins
     const admin = req.user._id;
     if(!admin){
         return res.status(401).json({unauthorized:`Unaauthorized access to the admin page`})
@@ -19,7 +19,7 @@ export const approveEvent = async (req, res) => {
     if(!eventId){
         return res.status(404).json({notFound:`Event not found`})
     }
-    const event = await eventModel.findById(eventId).populate('-password');
+    const event = await eventModel.findById(eventId).select('-password');
     if(!event){
         return res.status(404).json({notFound:`Event not found`})
     }
@@ -31,7 +31,7 @@ export const approveEvent = async (req, res) => {
     event.approvedBy = admin._id;
     await event.save();
     const approvalSubject = `Your Event Request for "${event.eventname}" Has Been Approved`;
-    const orga =await organizerModel.findById(organizerId).populate('-password');
+    const orga =await organizerModel.findById(organizerId).select('-password');
     const approvalMessage = `
                             Dear ${orga.username},
                             We are pleased to inform you that your event request for "${event.eventname}" on ${event.startDate} has been approved. Thank you for your thoughtful proposal and effort in organizing this event.
@@ -66,7 +66,7 @@ export const cancelEvent =async (req, res) => {
     if(!eventId){
         return res.status(404).json({notFound:`Event not found`})
     }
-    const event = await eventModel.findById(eventId).populate('-password');
+    const event = await eventModel.findById(eventId).select('-password');
     if(!event){
         return res.status(404).json({notFound:`Event not found`})
     }
@@ -76,7 +76,7 @@ export const cancelEvent =async (req, res) => {
     const {reason} = req.body;
     const cancelSubject="";
     const cancelMessage = "";
-    const orga = await orgaModel.findById(organizerId);
+    const orga = await orgaModel.findById(organizerId).select('-password');
     if(!orga){
         return res.status(404).json({notFound:`Organizer not found`})
     }
@@ -153,51 +153,95 @@ export const cancelEvent =async (req, res) => {
 }
 
 export const approveAdmin = async(req, res) => {
-    const adminId = req.user._id;
-    if(!adminId){
+    const SuperAdminId = req.user._id;
+    if(!SuperAdminId){
         return res.status(401).json({unauthorized:`Unauthorized access to the admin page`})
     }
-    const admin = await adminModel.findById(adminId);
-    const isSuperAdmin =await whiteListSchema.find(admin.email);
+    const SuperAdmin = await adminModel.findById(adminId);
+    const isSuperAdmin =await whiteListSchema.findOne({email:SuperAdmin.email});
     if(!isSuperAdmin){
         return res.status(401).json({unauthorized:`Admin has no access to approve another admin`})
     }
     try{
-        const {userId} = req.params;
-        const User = await adminModel.findById(userId).populate('-password');
-        if(!User){
+        const {adminId} = req.params;
+        const admin = await adminModel.findById(userId).select('-password');
+        if(!admin){
             return res.status(404).json({notFound:'User not found'});
         }
-        User.status = 'approved',
-        User.approvedBy=admin._id;
-        User.save();
+        admin.status = 'approved',
+        admin.approvedBy=SuperAdminId;
+        admin.save();
+        const subject = "Approval Notification: Admin Access Granted";
+        const message = `
+                        Dear ${admin.name},
+
+                        We are pleased to inform you that your request for admin access has been approved by the Super Admin of Elevent Pvt. Ltd. You now have full access to the admin panel and its functionalities.
+
+                        Please ensure that you utilize your admin privileges responsibly and in accordance with the company’s policies.
+
+                        If you have any questions or need assistance, feel free to reach out to our support team.
+
+                        Welcome aboard as an Admin!
+
+                        Best regards,  
+                        ${SuperAdmin.name}  
+                        Super Admin  
+                        Elevent Pvt. Ltd.
+                        `;
+        const notifyAdmin = new adminNotificationModel({
+            from:SuperAdminId,
+            to:adminId,
+            fromType:'Admoin',
+            subject,
+            message
+        })
+        await notifyAdmin.save();
         return res.status(200).json({success:"approved as an admin"});
     }
     catch(err){
         console.log(`Error has occured at superAdminController function`);
-        return res.status(500).json({err:`Internal error has occured`});
+        return res.status(500).json({err:`Internal error has occured - ${err}`});
     }
 }
 
 export const rejectAdmin = async(req, res) => {
-    const adminId = req.user._id;
-    if(!adminId){
+    const SuperAdminId = req.user._id;
+    if(!SuperAdminId){
         return res.status(401).json({unauthorized:`Unauthorized access to the admin page`})
     }
-    const admin = await adminModel.findById(adminId);
-    const isSuperAdmin =await whiteListSchema.find(admin.email);
+    const SuperAdmin = await adminModel.findById(adminId);
+    const isSuperAdmin =await whiteListSchema.findOne({email:SuperAdmin.email});
     if(!isSuperAdmin){
         return res.status(401).json({unauthorized:`Admin has no access to approve another admin`})
     }
     try{
-        const {userId} = req.params;
-        const User = await adminModel.findById(userId).populate('-password');
-        if(!User){
+        const {adminId} = req.params;
+        const admin = await adminModel.findById(userId).select('-password');
+        if(!admin){
             return res.status(404).json({notFound:'User not found'});
         }
-        User.status = 'rejected',
-        User.approvedBy=admin._id;
-        User.save();
+        admin.status = 'approved',
+        admin.approvedBy=SuperAdminId;
+        admin.save();
+        const subject = "Notification: Admin Access Request Rejected";
+        const message = `
+                        Dear ${admin.name},
+                        We regret to inform you that your request for admin access has been reviewed and rejected by the Super Admin of Elevent Pvt. Ltd.
+                        This decision was made after careful consideration of the current requirements and policies. We encourage you to reach out if you have any questions or need clarification regarding this decision.
+                        Thank you for your understanding, and we appreciate your continued contributions to Elevent Pvt. Ltd.
+                        Best regards,  
+                        ${SuperAdmin.name} 
+                        Super Admin  
+                        Elevent Pvt. Ltd.
+                        `;
+        const notifyAdmin = new adminNotification({
+            to:adminId,
+            from:SuperAdminId,
+            fromType:'Admin',
+            subject,
+            message
+        })
+        await notifyAdmin.save();
         return res.status(200).json({success:"rejected as an admin"});
     }
     catch(err){

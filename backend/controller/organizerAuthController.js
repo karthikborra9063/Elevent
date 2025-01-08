@@ -81,7 +81,7 @@ export const organizerLogin=async (req, res) => {
         if(!isPasswordCorrect){
             return res.status(400).json({error:"password incorrect"});
         }
-        generateTokenAndSetCookie(user._id,res);
+        generateTokenAndSetCookie(user._id,"Organizer",res);
         return res.status(200).json({
             _id:user._id,
             username: user.username,

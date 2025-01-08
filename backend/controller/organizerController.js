@@ -2,7 +2,8 @@ import bcrypt from "bcrypt";
 
 import organizer from "../models/organizerModel.js";
 import event from "../models/eventModel.js"
-import notification from "../models/organizerNotificationModel.js";
+import organizerNotification from "../models/organizerNotificationModel.js";
+import adminNotification from "../models/adminNotificationModel.js"
 
 export const updateOrganizer = async (req, res) => {
     try {
@@ -113,14 +114,14 @@ export const createEvent = async (req,res)=>{
         // await org.events.push(newEvent._id.toString());
         const subject = `${eventname} - created successfully`;
         const message = "Your event has been successfully created! 🎉 Attendees can now view and register for your event. Thank you for using our platform to bring your event to life!";
-        const notify =new notification({
+        const notifyOrganizer =new organizerNotification({
             to:organizerId,
             from:'Elevent',
             fromType:'Elevent',
             subject:subject,
             message:message,
         })
-        await notify.save();
+        await notifyOrganizer.save();
         return res.status(200).json({success:"Successful"});
         
     }catch(err){
@@ -134,7 +135,7 @@ export const eventList =async (req, res) => {
         if(!userId){
             return res.status(404).json({notFound:"User not found"});
         }
-        const events =await event.find({organizer:userId});
+        const events =await event.findMany({organizer:userId});
         return res.status(200).json({"events":events});
     }catch(err){
         console.log(`Error occured at eventList Controller`);
@@ -148,7 +149,7 @@ export const getMe = async (req, res) => {
         if(!userId){
             return res.status(404).json({notFound:"User not found"});
         }
-        const user  = await organizer.findById(userId).select('-paasword');
+        const user  = await organizer.findById(userId).select('-password');
         if(!user){
             return res.status(404).json({notFound:"User not found"})
         }
@@ -165,10 +166,31 @@ export const getNotifications = async (req, res) => {
         if(!userId){
             return res.status(404).json({notFound:"User not found"});
         }
-        const notifications = await notification.find({to:userId}).populate('from');
+        const notifications = await organizerNotification.findById({to:userId}).populate('from');
         return res.status(200).json(notifications);
     }catch(err){
         console.log(`Error has occured at organizer get notifications`);
         return res.status(500).json({error:`Internal error has occured -${err}`})
+    }
+}
+export const writeMessageToAdmin = async (req, res) => {
+    try{
+        const {subject,message} = req.body;
+        const organizerId = req.user._id;
+        const orga = await organizer.findById(organizerId);
+        if(!orga){
+            return res.status(400).json({notFound:"organizer not found"});
+        }
+        const notify = new adminNotification({
+            to:"Admin",
+            from:organizerId,
+            subject,
+            message
+        })
+        await notify.save();
+        return res.status(200).json({sent:"Message sent to the Admin"});
+    }catch(err){
+        console.log(`Error occured at writeMessageToAdmin - ${err}`);
+        return res.status(500).json({err:"Internal error occured"});
     }
 }

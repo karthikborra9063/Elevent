@@ -3,6 +3,9 @@ import bcrypt from 'bcrypt';
 
 import adminModel from '../models/adminModel';
 
+import generateTokenAndSetCookie from '../lib/utils/generateToken';
+import whiteListSchema from '../models/whiteListSchema';
+
 export const adminSignup = async (req, res) => {
 
     try{
@@ -23,7 +26,7 @@ export const adminSignup = async (req, res) => {
         const admin =new adminModel({
             name,
             email,
-            hashPassword
+            password:hashPassword
         })
         admin.save();
         return res.status(200).json({admin});
@@ -34,21 +37,45 @@ export const adminSignup = async (req, res) => {
 }
 export const adminLogin  = async (req,res)=>{
 
-    const {username,password} = req.body;
-
+    const {username,password,role} = req.body;
     if(!username){
-        return res.status(400).json({message:"plese provide the username"});
+        return res.status(400).json({message:"please provide the username"});
     }
     if(!password){
         return res.status(400).json({message:"please provide the password"});
     }
-    const admin = await adminModel.find(username);
+    if(!role){
+        return res.status(400).json({provide:`Please provide the role of the person properly`});
+    }
+    const admin = await adminModel
+  .findOne({ name: username })
     if(!admin){
-        return res.status(404).json({message:`User with the username ${username} not found`});
+        return res.status(404).json({message:`Admin with the username ${username} not found`});
+    }
+    if(role=="SuperAdmin"){
+        const isSuperAdmin = await whiteListSchema.findOne({email:admin.email});
+        if(!isSuperAdmin){ 
+            return res.status(401).json({unauatharized:"You are unautharized for superAdmin"});
+        }
     }
     const compare =await bcrypt.compare(password,admin?.password);
     if(!compare){
         return res.status(404).json({message:"Password mismacthed"});
     }
-    return res.status(200).json(admin.populate('-password'));
+    generateTokenAndSetCookie(admin._id,role,res);
+    const adminData = admin.toObject();
+    delete adminData.password;
+    return res.status(200).json(adminData);
+}
+
+export const adminLogout = async (req, res) => {
+
+    try{
+
+        res.cookie('jwt','',{maxAge:0});
+        return res.status(200).json({logout:`You are successfully logged out`});
+    }catch(err){
+        console.log(`Error has occured at adminLogout page`);
+        return res.status(500).json({err:`Internal error has occured`});
+    }
 }

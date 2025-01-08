@@ -1,6 +1,6 @@
 import express from 'express';
 
-import protectRoute from '../middleware/protectRoute.js';
+import protectRoute from '../middleware/organizerProtectRoute.js';
 import updateRouter from './updateRouter.js';
 import {createEvent,eventList,getMe, updateOrganizer,getNotifications} from '../controller/organizerController.js'
 

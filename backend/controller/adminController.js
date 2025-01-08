@@ -1,5 +1,6 @@
 import organizerModel from '../models/organizerModel.js'
 import adminModel from '../models/adminModel.js'
+import artistModel from '../models/artistModel.js'
 import eventModel from '../models/eventModel.js'
 import organizernotificationModel from '../models/organizerNotificationModel.js'
 
@@ -14,7 +15,7 @@ export const listApprovePedingEvents = async (req, res) => {
         const { search = "", page = 1, limit = 10 } = req.query;
         const query = {
             ...search && { username: { $regex: search, $options: "i" } },
-            status: "pending" // Add condition for pending status
+            status: "pending" 
         };
         const pendingEvents = await eventModel
             .find(query)
@@ -183,4 +184,57 @@ export const deleteOrganizer = async (req, res) => {
         console.log(`Error has occured at delete organizers`);
         return res.status(500).json({ error: "Internal server error" });
     }
+}
+
+export const writeMessageToOrganizer = async (req, res) => {
+    const {subject, message} = req.body;
+    try{
+
+        const organizerId = req.params.organizerId;
+        const organizer = await organizerModel.findById(organizerId);
+        if(!organizer){
+            return res.status(400).json({notFound:"organizer was not found"});
+        }
+        const adminId = req.user_id;
+        const admin = await adminModel.findById(adminId).select('-password');
+        if(!admin){
+            return res.status(400).json({notFound:"admin was not found"});
+        }
+        const notify = new organizernotificationModel({
+            to:organizer.organizerId,
+            from:adminId,
+            subject,
+            message
+        })
+        await notify.save();
+        return res.status(200).json({sent:"Notification sent successfully"});
+    }catch(err){
+        console.log(`Error has occured at write message to organizer - ${err}`);
+        return res.status(500).json({Err:`Internal error has occured`});
+    }
+}
+
+export const addArtist = async (req, res) => {
+
+    const {artistName,genre,bio,birthdate,socialLinks} = req.body;
+    try {
+
+        if(!artistName||!genre||!bio||!birthdate||!socialLinks){
+            return res.status(400).json({badRequest:"Provide all the fields"});
+        }
+
+        const newArtist =new artistModel({
+             artistName,
+             genre,
+             bio,
+             birthdate,
+             socialLinks
+        })
+        await newArtist.save();
+        return res.status(200).json({Added:"Artist added successfully"});
+    }catch(err){
+        console.log(`Error has occured at addArtist - ${err}`);
+        return res.status(500).json({Err:`Internal error has occured`});
+    }
+
 }
