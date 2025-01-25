@@ -10,6 +10,9 @@ export default defineConfig({
       port: 5173,
     },
     plugins: [react()],
+    proxy: {
+      '/api': 'http://localhost:8000', // Proxy API calls to the backend
+    },
   },
 })
 

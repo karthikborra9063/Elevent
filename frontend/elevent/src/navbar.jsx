@@ -6,6 +6,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { FaUser } from 'react-icons/fa'; // Profile icon
+import { Link } from "react-router-dom";
 
 function BasicExample() {
   return (
@@ -16,9 +17,9 @@ function BasicExample() {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
             <NavDropdown title="Login" id="basic-nav-dropdown">
-              <NavDropdown.Item href="#action/3.1">Attendee</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">Organizer</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.3">Attendee</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/attendee/login">Attendee</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/organizer/login">Organizer</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/admin/login">Admin</NavDropdown.Item>
             </NavDropdown>
           </Nav>
           <Form className="d-flex">
@@ -38,7 +39,7 @@ function BasicExample() {
             </NavDropdown>
           </Nav>
           <Nav className="ms-auto">
-            <Nav.Link href="#profile">
+            <Nav.Link href="/profile">
               <FaUser size={24} />
             </Nav.Link>
           </Nav>
