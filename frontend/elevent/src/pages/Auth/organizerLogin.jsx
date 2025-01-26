@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
+// import dotenv from 'dotenv';
+// dotenv.config();
 
 const OrganizerLoginForm = () => {
   const [formData, setFormData] = useState({
@@ -30,26 +32,42 @@ const OrganizerLoginForm = () => {
   };
 
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
 
-    setIsLoading(true); // Start loading
+    if (!validateForm()) return; // Validate form data before proceeding
+
+    setIsLoading(true); // Start loading spinner or indicator
+
     try {
-        const response = await axios.post("http://localhost:8000/api/auth/organizer/login", formData, {headers: {
-          "Content-Type": "application/json", // Ensure correct content type
-      }},);
+        // Make the POST request to the backend
+        const response = await axios.post(
+            `http://localhost:8000/api/auth/organizer/login`, // Backend login endpoint
+            formData, // Data from form (e.g., email, password)
+            {
+                headers: {
+                    "Content-Type": "application/json", // Explicitly set content type
+                },
+                withCredentials: true, // Send cookies with request
+            }
+        );
+
+        // Handle successful login
         setSuccessMessage("Login successful!");
-        setErrorMessage("");
+        setErrorMessage(""); // Clear any previous error messages
+        console.log(response.data); // Log the response for debugging
     } catch (error) {
-        setSuccessMessage("");
+        // Handle errors
+        setSuccessMessage(""); // Clear success message
         setErrorMessage(
             error.response?.data?.message || error.message || "An unexpected error occurred."
         );
+        console.error("Error during login:", error); // Log error for debugging
     } finally {
-        setIsLoading(false); // End loading
+        setIsLoading(false); // Stop loading spinner or indicator
     }
 };
+
 
 
   const toggleDarkMode = () => {

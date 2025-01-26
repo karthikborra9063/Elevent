@@ -3,26 +3,26 @@ import mongoose from "mongoose";
 const adminNotficationSchema = new mongoose.Schema({
     to:{
         type:mongoose.Schema.Types.Mixed,
-        require:true,
+        required:true,
     },
     from:{
         type:mongoose.Schema.Types.ObjectId,
-        require:true,
+        required:true,
         refPath:'fromType'
     },
     fromType:{
-        Type:String,
+        type:String,
         enum:['Organizer','Attendee','Admin'],
         required:true
     },
     subject:{
         type:String,
-        require:true,
+        required:true,
         maxLength:50
     },
     message:{
         type:String,
-        require:true,
+        required:true,
     }
 })
 

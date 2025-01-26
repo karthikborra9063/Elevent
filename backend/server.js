@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser'
-
+import cors from 'cors'
 
 import connectMongoDb from './db/connectMongoDb.js';
 import authRouter from './routes/authRoutes.js';
@@ -11,9 +11,14 @@ import adminRouter from './routes/adminRouter.js';
 const app = express()
 dotenv.config();
 
+app.use(cors({
+    origin: 'http://localhost:5173', // Frontend URL
+    credentials: true,               // Allow cookies to be sent
+}));
 
 
 app.use(express.urlencoded({extended:true}));
+app.use(express.json());
 const port=8000
 app.use(cookieParser());
 

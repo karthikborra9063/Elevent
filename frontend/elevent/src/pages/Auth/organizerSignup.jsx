@@ -61,7 +61,14 @@ const OrganizerSignupForm = () => {
     if (!validateForm()) return;
 
     try {
-      const response = await axios.post("/api/organizers/signup", formData); // Replace with your backend endpoint
+      const response = await axios.post(`http://localhost:8000/api/auth/organizer/signup`, // Backend login endpoint
+            formData, // Data from form (e.g., email, password)
+            {
+                headers: {
+                    "Content-Type": "application/json", // Explicitly set content type
+                },
+                withCredentials: true, // Send cookies with request
+            }); // Replace with your backend endpoint
       setSuccessMessage("Signup successful!");
       setErrorMessage("");
     } catch (error) {

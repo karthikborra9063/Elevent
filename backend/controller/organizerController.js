@@ -184,6 +184,7 @@ export const writeMessageToAdmin = async (req, res) => {
         const notify = new adminNotification({
             to:"Admin",
             from:organizerId,
+            fromType:'Organizer',
             subject,
             message
         })

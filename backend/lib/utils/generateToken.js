@@ -8,11 +8,12 @@ const generateTokenAndSetCookie = (userId, role, res) => {
 
         const token = jwt.sign({ userId, role }, process.env.JWT_SECRET, { expiresIn: '15d' });
 
+        // Set the cookie
         res.cookie('jwt', token, {
-            maxAge: 15 * 24 * 60 * 60 * 1000, 
-            httpOnly: true,                  
-            sameSite: 'strict',              
-            secure: process.env.NODE_ENV === 'production', 
+            maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
+            httpOnly: true,                  // Prevents JavaScript access
+            sameSite: 'Lax',                 // Suitable for same-origin or top-level navigation
+            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
         });
 
         return token; 

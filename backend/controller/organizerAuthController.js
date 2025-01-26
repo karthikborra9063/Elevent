@@ -5,19 +5,17 @@ import generateTokenAndSetCookie from '../lib/utils/generateToken.js';
 export const organizerSignup = async (req, res) => {
     try {
         const {
-            username, password, email, mobileNumber, address, profileImg, coverImage, experience, acheivments, about
+            username, password, email, mobileNumber, address
         } = req.body;
         const { street, city, state, postalCode, country } = address;
 
         if (password.length < 6) {
             return res.status(400).json({ error: 'Password length should be more than 6 characters' });
         }
-
         const existingUser = await organizer.findOne({ username });
         if (existingUser) {
             return res.status(400).json({ error: "User already exists" });
         }
-
         const existingEmail = await organizer.findOne({ email });
         if (existingEmail) {
             return res.status(400).json({ error: "Email already exists" });
@@ -48,16 +46,11 @@ export const organizerSignup = async (req, res) => {
             email,
             password: hashPassword,
             mobileNumber,
-            address,
-            profileImg,
-            coverImage,
-            experience,
-            acheivments,
-            about
+            address
         });
 
         await newOrganizer.save();
-        generateTokenAndSetCookie(newOrganizer._id, res);
+        generateTokenAndSetCookie(newOrganizer._id,"Organizer", res);
 
         return res.status(200).json({
             success: "User created successfully",
@@ -70,6 +63,7 @@ export const organizerSignup = async (req, res) => {
 export const organizerLogin=async (req, res) => {
     try{
         const {username, password} = req.body;
+        console.log(username);
         if(!username||!password){
             return res.status(400).json({error:"Enter the username and password"})
         }
