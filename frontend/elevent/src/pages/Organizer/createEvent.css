@@ -1,0 +1,10 @@
+.custom-placeholder::placeholder {
+    color: #F8FAFC; /* Light gray for placeholder */
+    opacity: 1; /* Ensure it’s fully visible */
+  }
+  body {
+    background-color: #121212; 
+    /* color: #F8FAFC;  */
+    margin: 0;
+    padding: 0;
+  }

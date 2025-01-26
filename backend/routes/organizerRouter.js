@@ -7,7 +7,7 @@ import {createEvent,eventList,getMe, updateOrganizer,getNotifications} from '../
 const router = express.Router();
 
 router.use('/update',protectRoute,updateRouter);
-router.post('/create',protectRoute,createEvent);
+router.post('/create-event',protectRoute,createEvent);
 router.get('/events',protectRoute,eventList);
 router.get('/profile',protectRoute,getMe);
 router.post('/profile',protectRoute,updateOrganizer);

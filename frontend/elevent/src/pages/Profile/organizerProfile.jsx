@@ -412,6 +412,14 @@ const OrganizerProfile = () => {
                       />
                     </div>
                   </Form.Group>
+                  <Button
+                    style={{marginTop:"10px"}}
+                    variant="outline-info"
+                    size="sm"
+                    onClick={handleConfirmChanges}
+                    >
+                save changes
+            </Button>
                 </Form>
                 <FaTrash
                   color="#ff4d4d"
@@ -462,8 +470,16 @@ const OrganizerProfile = () => {
                       handleChangeAchievement(index, e.target.value)
                     }
                     placeholder="Enter achievement"
-                    style={{ flex: 1 }}
-                  />
+                    style={{ flex: 1, width: "calc(100% - 20px)" }}
+                />
+                   <Button
+                    style={{marginLeft:"10px"}}
+                    variant="outline-info"
+                    size="sm"
+                    onClick={handleConfirmChanges}
+                    >
+                save changes
+            </Button>
                   <FaTrash
                     color="#ff4d4d"
                     style={{ cursor: "pointer", marginLeft: "8px" }}
@@ -478,16 +494,6 @@ const OrganizerProfile = () => {
         </Card.Body>
       </Card>
 
-      {/* Confirm Changes Button */}
-      <Button
-        variant="success"
-        size="lg"
-        onClick={handleConfirmChanges}
-        style={{ width: "100%", marginTop: "20px" }}
-      >
-        <FaCheck className="me-2" />
-        Confirm Changes
-      </Button>
 
             {/* Event Statistics */}
             <Card
@@ -548,8 +554,7 @@ const OrganizerProfile = () => {
       padding: "15px",
       overflowY: "auto",
       maxHeight: "calc(100vh - 150px)", // Adjust height as needed
-      maxHeight: "70vh", // Decrease height
-      overflowY: "auto", 
+      // overflowY: "auto", 
     }}
   >
     <Form>
