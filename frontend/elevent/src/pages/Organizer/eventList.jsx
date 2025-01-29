@@ -39,8 +39,7 @@ const sampleEvents = [
 const EventList = () => {
     const navigate = useNavigate();
     const handleViewDetails = () => {
-        navigate(`organizer/events/temp`);
-        console.log("Hello")
+        navigate(`temp`);
       };
   return (
     <div style={{ backgroundColor: "#121212", color: "#F8FAFC", minHeight: "100vh", paddingTop: "20px" }}>

@@ -160,6 +160,24 @@ export const getMe = async (req, res) => {
         return res.status(500).json({error:`Internal error has occured -${err}`})
     }
 }
+export const getName = async (req, res) => {
+    try{
+
+        const userId = req.user._id;
+        if(!userId){
+            return res.status(404).json({notFound:"User not found"});
+        }
+        const user  = await organizer.findById(userId).select('-password');
+        if(!user){
+            return res.status(404).json({notFound:"User not found"})
+        }
+        return res.status(200).json({organizerName:user.username});
+
+    }catch(err){
+        console.log(`Error has occured at organizer get me functions`);
+        return res.status(500).json({error:`Internal error has occured -${err}`})
+    }
+}
 export const getNotifications = async (req, res) => {
     try{
         userId = req.user._id;

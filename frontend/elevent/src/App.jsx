@@ -10,6 +10,10 @@ import OrganizerProfile from './pages/Profile/organizerProfile.jsx';
 import CreateEventForm from './pages/Organizer/createEvent.jsx';
 import EventList from './pages/Organizer/eventList.jsx';
 import EventDetails from './pages/Organizer/eventDetails.jsx';
+import NotificationList from './pages/Organizer/notificationList.jsx';
+import NotificationDetails from './pages/Organizer/notificationDetails.jsx'
+import MessageAdmin from './pages/Organizer/messageAdmin.jsx';
+import UpdateToAttendee from './pages/Organizer/updateToAttendee.jsx';
 
 function App() {
   return (
@@ -26,6 +30,10 @@ function App() {
         <Route path="create-event" element={<CreateEventForm/>}/>
         <Route path="organizer/events" element={<EventList/>}/>
         <Route path="organizer/events/temp" element={<EventDetails/>}/>
+        <Route path="organizer/notifications" element={<NotificationList/>}/>
+        <Route path="organizer/notifications/temp" element={<NotificationDetails/>}/>
+        <Route path="organizer/messageAdmin" element={<MessageAdmin/>}/>
+        <Route path="organizer/updateToAttendees" element={<UpdateToAttendee/>}/>
       </Routes>
     </Router>
   );

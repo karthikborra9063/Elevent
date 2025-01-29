@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Image, Badge, Button, Modal, Form } from "re
 import axios from "axios";
 import LoadingSpinner from "../../components/common/loadingSpinner";
 import { FaCamera } from "react-icons/fa";
-import { FaPlus, FaTrash,FaCheck } from "react-icons/fa";
+import { FaPlus, FaTrash , FaEnvelope, FaPhoneAlt, FaMapMarkerAlt,FaBriefcase,FaMedal,FaCalendarCheck } from "react-icons/fa";
 
 const OrganizerProfile = () => {
   const [organizerData, setOrganizerData] = useState(null);
@@ -324,26 +324,34 @@ const OrganizerProfile = () => {
         {/* Contact Info */}
         <Row>
           <Col md={8} className="mx-auto">
-            <Card
-              className="mb-4"
-              style={{
-                backgroundColor: "#1f1f1f",
-                boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.6)",
-                color: "#e0e0e0",
-              }}
-            >
-              <Card.Body>
-                <h4 className="text-info">Contact Information</h4>
-                <p>
-                  <strong>Email: </strong> {organizerData.email || "Not provided"}
-                </p>
-                <p>
-                  <strong>Mobile: </strong> {organizerData.mobileNumber || "Not available"}
-                </p>
-                <p> 
-                  <strong>Address: </strong>{" "}
-                  {`${organizerData.address.street}, ${organizerData.address.city}, ${organizerData.address.state}, ${organizerData.address.postalCode}, ${organizerData.address.country}`}
-                </p>
+           
+<Card
+  className="mb-4"
+  style={{
+    backgroundColor: "#1f1f1f",
+    boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.6)",
+    color: "#e0e0e0",
+  }}
+>
+  <Card.Body>
+    <h4 className="text-info">Contact Information</h4>
+    <p>
+      <FaEnvelope className="text-warning me-2" />
+      <strong>Email: </strong> {organizerData.email || "Not provided"}
+    </p>
+    <p>
+      <FaPhoneAlt className="text-warning me-2" />
+      <strong>Mobile: </strong> {organizerData.mobileNumber || "Not available"}
+    </p>
+    <p>
+      <FaMapMarkerAlt className="text-warning me-2" />
+      <strong>Address: </strong>
+      {`${organizerData.address.street || "N/A"}, ${
+        organizerData.address.city || "N/A"
+      }, ${organizerData.address.state || "N/A"}, ${
+        organizerData.address.postalCode || "N/A"
+      }, ${organizerData.address.country || "N/A"}`}
+    </p>
                 <Card
         className="mb-4"
         style={{
@@ -354,7 +362,11 @@ const OrganizerProfile = () => {
       >
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="text-info">Experience</h4>
+          <div className="d-flex align-items-center mb-3">
+            <FaBriefcase className="text-warning me-2" size={24} />
+            <h4 className="text-info mb-0">Experience</h4>
+          </div>
+
             <Button
               variant="outline-info"
               size="sm"
@@ -445,7 +457,10 @@ const OrganizerProfile = () => {
       >
         <Card.Body>
           <div className="d-flex justify-content-between align-items-center">
-            <h4 className="text-info">Achievements</h4>
+          <div className="d-flex align-items-center mb-3">
+            <FaMedal className="text-warning me-2" size={24} />
+            <h4 className="text-info mb-0">Achievements</h4>
+          </div>
             <Button
               variant="outline-info"
               size="sm"
@@ -505,7 +520,10 @@ const OrganizerProfile = () => {
               }}
             >
               <Card.Body>
-                <h4 className="text-info">Event Statistics</h4>
+              <div className="d-flex align-items-center mb-3">
+                <FaCalendarCheck className="text-warning me-2" size={24} />
+                <h4 className="text-info mb-0">Event Statistics</h4>
+              </div>
                 <p>
                   <strong>Total Events Organized: </strong>
                   {organizerData.eventCount || 0}
