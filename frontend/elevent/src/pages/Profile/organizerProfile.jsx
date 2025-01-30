@@ -4,6 +4,12 @@ import axios from "axios";
 import LoadingSpinner from "../../components/common/loadingSpinner";
 import { FaCamera } from "react-icons/fa";
 import { FaPlus, FaTrash , FaEnvelope, FaPhoneAlt, FaMapMarkerAlt,FaBriefcase,FaMedal,FaCalendarCheck } from "react-icons/fa";
+// import imageCompression from 'browser-image-compression';
+import OrganizerProfileUpdate from './organizerProfileUpdate'
+
+import OrganizerExperience from "./organizerExperience";
+
+import OrganizerAcheivments from "./organizerAcheivments";
 
 const OrganizerProfile = () => {
   const [organizerData, setOrganizerData] = useState(null);
@@ -11,54 +17,53 @@ const OrganizerProfile = () => {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false); // State to control modal visibility
   const [formData, setFormData] = useState({}); // State for form inputs
-  const [addData, setAddData] = useState({
-    experience: [...(organizerData?.experience || [])],
-    achievements: [...(organizerData?.achievements || [])],
-  });
 
   const apiBaseUrl = "http://localhost:8000";
-
-  const handleProfileImageChange = (e) => {
+  const handleProfileImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        // Assuming formData is accessible here
-        formData.profileImg = reader.result;
-        setOrganizerData((prevData) => ({
-          ...prevData,
-          profileImg: reader.result,
-        }));
-      };
-      reader.readAsDataURL(file);
+      const formData = new FormData();
+      formData.append("profileImg", file); 
+  
+      try {
+        const response = await axios.put(`${apiBaseUrl}/api/organizer/updateProfileImage`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        });
+  
+        if (response.data.success) {
+          setOrganizerData((prevData) => ({
+            ...prevData,
+            profileImg: response.data.profileImg, 
+          }));
+        }
+      } catch (err) {
+        setError("Failed to upload profile image. Try again.");
+      }
     }
   };
-  const handleCoverImageChange = (e) => {
-    console.log("hello")
+  
+  const handleCoverImageChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64Image = reader.result;
-        
-        // Update formData in an immutable way
-        const updatedFormData = {
-          ...formData,
-          coverImage: base64Image, // Corrected typo
-        };
+      const formData = new FormData();
+      formData.append("coverImage", file); 
   
-        // Assuming formData is stored in state or accessible here
-        setFormData(updatedFormData);
+      try {
+        const response = await axios.put(`${apiBaseUrl}/api/organizer/updateCoverImage`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        });
   
-        // Update organizer data for immediate UI update
-        setOrganizerData((prevData) => ({
-          ...prevData,
-          coverImage: base64Image, // Assuming the key is coverImage
-        }));
-      };
-      reader.readAsDataURL(file);
-    } else {
-      console.error("No file selected.");
+        if (response.data.success) {
+          setOrganizerData((prevData) => ({
+            ...prevData,
+            coverImage: response.data.coverImage, 
+          }));
+        }
+      } catch (err) {
+        setError("Failed to upload profile image. Try again.");
+      }
     }
   };
   
@@ -76,6 +81,8 @@ const OrganizerProfile = () => {
         address: response.data.user?.address || "",
         profileImg:"",
         coverImage:"",
+        experience:[],
+        achievements:[],
       });
     } catch (err) {
       setError("Failed to load profile. Please try again later.");
@@ -88,14 +95,9 @@ const OrganizerProfile = () => {
     fetchOrganizerProfile();
   }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
-  };
-
   const handleSave = async () => {
     try {
-      const response = await axios.put(`${apiBaseUrl}/api/organizer/update`, formData, {
+      const response = await axios.put(`${apiBaseUrl}/api/organizer/profile`, formData, {
         withCredentials: true,
       });
       console.log("Update Response:", response.data);
@@ -106,61 +108,7 @@ const OrganizerProfile = () => {
       alert("Failed to update profile. Please try again.");
     }
   };
-  const handleAddExperience = () => {
-    setAddData((prevData) => ({
-      ...prevData,
-      experience: [
-        ...prevData.experience,
-        { organization: "", duration: { years: 0, months: 0 } },
-      ],
-    }));
-  };
-
-  const handleAddAchievement = () => {
-    setAddData((prevData) => ({
-      ...prevData,
-      achievements: [...prevData.achievements, ""],
-    }));
-  };
-
-  const handleChangeExperience = (index, field, value) => {
-    const updatedExperience = [...addData.experience];
-    updatedExperience[index][field] = value;
-    setAddData((prevData) => ({
-      ...prevData,
-      experience: updatedExperience,
-    }));
-  };
-
-  const handleChangeAchievement = (index, value) => {
-    const updatedAchievements = [...addData.achievements];
-    updatedAchievements[index] = value;
-    setAddData((prevData) => ({
-      ...prevData,
-      achievements: updatedAchievements,
-    }));
-  };
-
-  const handleRemoveExperience = (index) => {
-    setAddData((prevData) => ({
-      ...prevData,
-      experience: prevData.experience.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleRemoveAchievement = (index) => {
-    setAddData((prevData) => ({
-      ...prevData,
-      achievements: prevData.achievements.filter((_, i) => i !== index),
-    }));
-  };
-
-  const handleConfirmChanges = () => {
-    // Confirm changes to organizerData
-    setOrganizerData(addData);
-    // Optionally, handle backend connection here (you can send `addData` to the backend)
-    alert("Changes confirmed! Ready to send data to backend.");
-  };
+  
 
   if (loading) return <LoadingSpinner />;
   if (error) return <div className="text-center text-danger">{error}</div>;
@@ -210,18 +158,18 @@ const OrganizerProfile = () => {
     }}
   >
     <label
-      htmlFor="profileImgInput"
+      htmlFor="coverImageInput"
       style={{
         cursor: "pointer",
         margin: 0,
         pointerEvents: "auto", // Allow pointer events for the label
       }}
     >
-      <FaCamera color="#fff" size={16} />
+      <FaCamera color="#fff" size={30} />
     </label>
     <input
       type="file"
-      id="profileImgInput"
+      id="coverImageInput"
       accept="image/*"
       style={{ display: "none" }}
       onChange={handleCoverImageChange}
@@ -352,164 +300,8 @@ const OrganizerProfile = () => {
         organizerData.address.postalCode || "N/A"
       }, ${organizerData.address.country || "N/A"}`}
     </p>
-                <Card
-        className="mb-4"
-        style={{
-          backgroundColor: "#292929",
-          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.7)",
-          color: "#e0e0e0",
-        }}
-      >
-        <Card.Body>
-          <div className="d-flex justify-content-between align-items-center">
-          <div className="d-flex align-items-center mb-3">
-            <FaBriefcase className="text-warning me-2" size={24} />
-            <h4 className="text-info mb-0">Experience</h4>
-          </div>
-
-            <Button
-              variant="outline-info"
-              size="sm"
-              onClick={handleAddExperience}
-            >
-              <FaPlus className="me-1" /> Add Experience
-            </Button>
-          </div>
-
-          {Array.isArray(addData.experience) &&
-          addData.experience.length > 0 ? (
-            addData.experience.map((exp, index) => (
-              <div
-                key={index}
-                className="d-flex flex-column justify-content-between align-items-start"
-              >
-                <Form>
-                  <Form.Group>
-                    <Form.Label>Organization</Form.Label>
-                    <Form.Control
-                      type="text"
-                      value={exp.organization}
-                      onChange={(e) =>
-                        handleChangeExperience(index, "organization", e.target.value)
-                      }
-                      placeholder="Enter organization name"
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Duration</Form.Label>
-                    <div className="d-flex">
-                      <Form.Control
-                        type="number"
-                        value={exp.duration.years}
-                        onChange={(e) =>
-                          handleChangeExperience(index, "duration", {
-                            ...exp.duration,
-                            years: e.target.value,
-                          })
-                        }
-                        placeholder="Years"
-                        style={{ width: "80px", marginRight: "8px" }}
-                      />
-                      <Form.Control
-                        type="number"
-                        value={exp.duration.months}
-                        onChange={(e) =>
-                          handleChangeExperience(index, "duration", {
-                            ...exp.duration,
-                            months: e.target.value,
-                          })
-                        }
-                        placeholder="Months"
-                        style={{ width: "80px" }}
-                      />
-                    </div>
-                  </Form.Group>
-                  <Button
-                    style={{marginTop:"10px"}}
-                    variant="outline-info"
-                    size="sm"
-                    onClick={handleConfirmChanges}
-                    >
-                save changes
-            </Button>
-                </Form>
-                <FaTrash
-                  color="#ff4d4d"
-                  style={{ cursor: "pointer", marginTop: "8px" }}
-                  onClick={() => handleRemoveExperience(index)}
-                />
-              </div>
-            ))
-          ) : (
-            <p>No experience listed.</p>
-          )}
-        </Card.Body>
-      </Card>
-
-      {/* Achievements Section */}
-      <Card
-        className="mb-4"
-        style={{
-          backgroundColor: "#1f1f1f",
-          boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.6)",
-          color: "#e0e0e0",
-        }}
-      >
-        <Card.Body>
-          <div className="d-flex justify-content-between align-items-center">
-          <div className="d-flex align-items-center mb-3">
-            <FaMedal className="text-warning me-2" size={24} />
-            <h4 className="text-info mb-0">Achievements</h4>
-          </div>
-            <Button
-              variant="outline-info"
-              size="sm"
-              onClick={handleAddAchievement}
-            >
-              <FaPlus className="me-1" /> Add Achievement
-            </Button>
-          </div>
-
-          {Array.isArray(addData.achievements) &&
-          addData.achievements.length > 0 ? (
-            <ul>
-              {addData.achievements.map((ach, index) => (
-                <li
-                  key={index}
-                  className="d-flex justify-content-between align-items-center"
-                >
-                  <Form.Control
-                    type="text"
-                    value={ach}
-                    onChange={(e) =>
-                      handleChangeAchievement(index, e.target.value)
-                    }
-                    placeholder="Enter achievement"
-                    style={{ flex: 1, width: "calc(100% - 20px)" }}
-                />
-                   <Button
-                    style={{marginLeft:"10px"}}
-                    variant="outline-info"
-                    size="sm"
-                    onClick={handleConfirmChanges}
-                    >
-                save changes
-            </Button>
-                  <FaTrash
-                    color="#ff4d4d"
-                    style={{ cursor: "pointer", marginLeft: "8px" }}
-                    onClick={() => handleRemoveAchievement(index)}
-                  />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No achievements listed.</p>
-          )}
-        </Card.Body>
-      </Card>
-
-
+    <OrganizerExperience experience={organizerData.experience}/>
+    <OrganizerAcheivments achievements={organizerData.acheivments}/>
             {/* Event Statistics */}
             <Card
               className="mb-4"
@@ -538,186 +330,13 @@ const OrganizerProfile = () => {
           </Col>
         </Row>
       </Container>
-
-      {/* Modal for Updating Profile */}
-      <Modal
-  show={showModal}
-  onHide={() => setShowModal(false)}
-  centered
-  dialogClassName="custom-modal"
-  backdrop="static"
-  style={{
-    maxWidth: "100rem", // Increase width
-    margin: "0 auto", // Center horizontally
-  }}
->
-  <Modal.Header
-    closeButton
-    closeVariant="white"
-    style={{
-      backgroundColor: "#343a40",
-      color: "#fff",
-      padding: "10px 15px",
-      position: "sticky",
-      top: 0,
-      zIndex: 1020,
-    }}
-  >
-    <Modal.Title>Update Profile</Modal.Title>
-  </Modal.Header>
-  <Modal.Body
-    style={{
-      backgroundColor: "#1f1f1f",
-      color: "#e0e0e0",
-      padding: "15px",
-      overflowY: "auto",
-      maxHeight: "calc(100vh - 150px)", // Adjust height as needed
-      // overflowY: "auto", 
-    }}
-  >
-    <Form>
-      <Form.Group className="mb-3">
-        <Form.Label>Username</Form.Label>
-        <Form.Control
-          type="text"
-          name="username"
-          value={formData.username}
-          onChange={handleInputChange}
-          style={{
-            backgroundColor: "#343a40",
-            color: "#e0e0e0",
-          }}
-        />
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>Bio</Form.Label>
-        <Form.Control
-          as="textarea"
-          rows={3}
-          name="about"
-          value={formData.about}
-          onChange={handleInputChange}
-          style={{
-            backgroundColor: "#343a40",
-            color: "#e0e0e0",
-          }}
-        />
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>Email</Form.Label>
-        <Form.Control
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleInputChange}
-          style={{
-            backgroundColor: "#343a40",
-            color: "#e0e0e0",
-          }}
-        />
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>Mobile Number</Form.Label>
-        <Form.Control
-          type="text"
-          name="mobileNumber"
-          value={formData.mobileNumber}
-          onChange={handleInputChange}
-          style={{
-            backgroundColor: "#343a40",
-            color: "#e0e0e0",
-          }}
-        />
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>Street</Form.Label>
-        <Form.Control
-          type="text"
-          name="mobileNumber"
-          value={formData.address.street}
-          onChange={handleInputChange}
-          style={{
-            backgroundColor: "#343a40",
-            color: "#e0e0e0",
-          }}
-        />
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>City</Form.Label>
-        <Form.Control
-          type="text"
-          name="mobileNumber"
-          value={formData.address.city}
-          onChange={handleInputChange}
-          style={{
-            backgroundColor: "#343a40",
-            color: "#e0e0e0",
-          }}
-        />
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>State</Form.Label>
-        <Form.Control
-          type="text"
-          name="mobileNumber"
-          value={formData.address.state}
-          onChange={handleInputChange}
-          style={{
-            backgroundColor: "#343a40",
-            color: "#e0e0e0",
-          }}
-        />
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>Pincode</Form.Label>
-        <Form.Control
-          type="text"
-          name="mobileNumber"
-          value={formData.address.postalCode}
-          onChange={handleInputChange}
-          style={{
-            backgroundColor: "#343a40",
-            color: "#e0e0e0",
-          }}
-        />
-      </Form.Group>
-      <Form.Group className="mb-3">
-        <Form.Label>Country</Form.Label>
-        <Form.Control
-          type="text"
-          name="mobileNumber"
-          value={formData.address.country}
-          onChange={handleInputChange}
-          style={{
-            backgroundColor: "#343a40",
-            color: "#e0e0e0",
-          }}
-        />
-      </Form.Group>
-    </Form>
-  </Modal.Body>
-  <Modal.Footer
-    style={{
-      backgroundColor: "#343a40",
-      padding: "10px 15px",
-      position: "sticky",
-      bottom: 0,
-      zIndex: 1020,
-    }}
-  >
-    <Button variant="secondary" onClick={() => setShowModal(false)}>
-      Close
-    </Button>
-    <Button variant="primary" onClick={handleSave}>
-      Save Changes
-    </Button>
-  </Modal.Footer>
-</Modal>
-
-
-
-
-
+      <OrganizerProfileUpdate 
+        showModal={showModal} 
+        setShowModal={setShowModal} 
+        formData={formData} 
+        setFormData={setFormData} 
+        handleSave={handleSave} 
+      />
     </div>
   );
 };

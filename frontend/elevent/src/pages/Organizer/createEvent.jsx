@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+
+import styles from './createEvent.module.css'
+
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
-import './createEvent.css'
+
 
 const CreateEventForm = () => {
   const [formData, setFormData] = useState({
@@ -63,7 +66,7 @@ const CreateEventForm = () => {
                 placeholder="Enter event name"
                 value={formData.eventname}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 required
                 style={{ backgroundColor: "#1e1e1e", color: "#F8FAFC", border: "1px solid #444" }}
               />
@@ -78,7 +81,7 @@ const CreateEventForm = () => {
                 placeholder="Enter category"
                 value={formData.category}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 required
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               />
@@ -95,7 +98,7 @@ const CreateEventForm = () => {
                 name="startDate"
                 value={formData.startDate}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 required
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               />
@@ -109,7 +112,7 @@ const CreateEventForm = () => {
                 name="endDate"
                 value={formData.endDate}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 required
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               />
@@ -127,7 +130,7 @@ const CreateEventForm = () => {
                 placeholder="Enter venue"
                 value={formData.venue}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 required
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               />
@@ -146,7 +149,7 @@ const CreateEventForm = () => {
                 placeholder="Street"
                 value={formData.address.street}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 required
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               />
@@ -161,7 +164,7 @@ const CreateEventForm = () => {
                 placeholder="City"
                 value={formData.address.city}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 required
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               />
@@ -179,7 +182,7 @@ const CreateEventForm = () => {
                 placeholder="State"
                 value={formData.address.state}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 required
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               />
@@ -194,7 +197,7 @@ const CreateEventForm = () => {
                 placeholder="Postal Code"
                 value={formData.address.postalCode}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 required
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               />
@@ -212,7 +215,7 @@ const CreateEventForm = () => {
                 placeholder="Country"
                 value={formData.address.country}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 required
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               />
@@ -228,7 +231,7 @@ const CreateEventForm = () => {
                 name="eventType"
                 value={formData.eventType}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               >
                 <option value="public">Public</option>
@@ -245,7 +248,7 @@ const CreateEventForm = () => {
                 label="Require Tickets"
                 checked={formData.ticketsRequired}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 style={{ backgroundColor: "#1e1e1e", color: "#fff" }}
               />
             </Form.Group>
@@ -262,7 +265,7 @@ const CreateEventForm = () => {
                 placeholder="Price per ticket"
                 value={formData.price}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 disabled={!formData.ticketsRequired}
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               />
@@ -277,7 +280,7 @@ const CreateEventForm = () => {
                 placeholder="Max Attendees"
                 value={formData.maxAttendees}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 required
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               />
@@ -295,7 +298,7 @@ const CreateEventForm = () => {
                 placeholder="Enter speakers (comma separated)"
                 value={formData.speakers}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               />
             </Form.Group>
@@ -309,7 +312,7 @@ const CreateEventForm = () => {
                 placeholder="Enter services (comma separated)"
                 value={formData.services}
                 onChange={handleChange}
-                className="custom-placeholder"
+                className={styles.customPlaceholder}
                 style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
               />
             </Form.Group>

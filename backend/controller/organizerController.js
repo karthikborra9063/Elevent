@@ -4,10 +4,13 @@ import organizer from "../models/organizerModel.js";
 import event from "../models/eventModel.js"
 import organizerNotification from "../models/organizerNotificationModel.js";
 import adminNotification from "../models/adminNotificationModel.js"
+import streamifier from "streamifier";
+
+import {v2 as cloudinary} from 'cloudinary';
 
 export const updateOrganizer = async (req, res) => {
     try {
-        const { username, email, password, mobileNumber, address, profileImg, coverImage, experience, acheivments, about } = req.body;
+        const { username, email, password, mobileNumber, address, experience, acheivments, about } = req.body;
         const userId = req.user._id;
         let user = await organizer.findById(userId);
         if (!user) {
@@ -25,8 +28,6 @@ export const updateOrganizer = async (req, res) => {
         user.email = email || user.email;
         user.mobileNumber = mobileNumber || user.mobileNumber;
         user.address = address || user.address;
-        user.profileImg = profileImg || user.profileImg;
-        user.coverImage = coverImage || user.coverImage;
         user.experience = experience || user.experience;
         user.acheivments = acheivments || user.acheivments;
         user.about = about || user.about;
@@ -37,9 +38,116 @@ export const updateOrganizer = async (req, res) => {
         user.password = null;
         return res.status(200).json(user);
     } catch (err) {
+        console.log(err);
         return res.status(500).json({ error: `Internal error - ${err.message}` });
     }
 };
+export const updateProfileImage = async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No image uploaded" });
+      }
+  
+      // Fetch the current profile image URL from the database
+      const currentOrganizer = await organizer.findById(req.user.id);
+      if (!currentOrganizer) {
+        return res.status(404).json({ error: "Organizer not found" });
+      }
+  
+      const currentImageUrl = currentOrganizer.profileImg;
+      if (currentImageUrl) {
+        // Extract public ID from Cloudinary URL
+        const publicId = currentImageUrl.split("/").pop().split(".")[0];
+  
+        // Delete previous image from Cloudinary
+        await cloudinary.uploader.destroy(`profile_images/${publicId}`);
+      }
+  
+      // Upload the new image to Cloudinary
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: "profile_images" },
+        async (error, result) => {
+          if (error) {
+            console.error("Cloudinary Upload Error:", error);
+            return res.status(500).json({ error: "Failed to upload image to Cloudinary" });
+          }
+  
+          try {
+            // Update profile image in database
+            const updatedOrganizer = await organizer.findByIdAndUpdate(
+              req.user.id,
+              { profileImg: result.secure_url },
+              { new: true }
+            );
+  
+            res.json({ success: true, profileImg: updatedOrganizer.profileImg });
+          } catch (err) {
+            console.error("Database Update Error:", err);
+            res.status(500).json({ error: "Failed to update profile image" });
+          }
+        }
+      );
+  
+      // Pipe the uploaded image file (buffer) to Cloudinary
+      streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+    } catch (err) {
+      console.error("Internal Server Error:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
+  export const updateCoverImage = async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No image uploaded" });
+      }
+  
+      // Fetch the current cover image URL from the database
+      const currentOrganizer = await organizer.findById(req.user.id);
+      if (!currentOrganizer) {
+        return res.status(404).json({ error: "Organizer not found" });
+      }
+  
+      const currentCoverImageUrl = currentOrganizer.coverImage;
+      if (currentCoverImageUrl) {
+        // Extract public ID from Cloudinary URL
+        const publicId = currentCoverImageUrl.split("/").pop().split(".")[0];
+  
+        // Delete previous cover image from Cloudinary
+        await cloudinary.uploader.destroy(`cover_images/${publicId}`);
+      }
+  
+      // Upload the new cover image to Cloudinary
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: "cover_images" },
+        async (error, result) => {
+          if (error) {
+            console.error("Cloudinary Upload Error:", error);
+            return res.status(500).json({ error: "Failed to upload image to Cloudinary" });
+          }
+  
+          try {
+            // Update cover image in the database
+            const updatedOrganizer = await organizer.findByIdAndUpdate(
+              req.user.id,
+              { coverImage: result.secure_url },
+              { new: true }
+            );
+  
+            res.json({ success: true, coverImage: updatedOrganizer.coverImage });
+          } catch (err) {
+            console.error("Database Update Error:", err);
+            res.status(500).json({ error: "Failed to update cover image" });
+          }
+        }
+      );
+  
+      // Pipe the uploaded image file (buffer) to Cloudinary
+      streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+    } catch (err) {
+      console.error("Internal Server Error:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
 export const createEvent = async (req,res)=>{
     const {eventname,category,startDate,endDate,venue,address,eventType,ticketsRequired,price,maxAttendees} = req.body;
     const {speakers,services,sponsers} = req.body;

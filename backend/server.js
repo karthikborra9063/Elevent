@@ -8,8 +8,25 @@ import authRouter from './routes/authRoutes.js';
 import organizerRouter from './routes/organizerRouter.js';
 import adminRouter from './routes/adminRouter.js';
 
+import {v2 as cloudinary} from 'cloudinary';
+
+
+dotenv.config({ path: './.env' });
+cloudinary.config({
+    cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
+    api_key:process.env.CLOUDINARY_API_KEY,
+    api_secret:process.env.CLOUDINARY_API_SECRET,
+});
+
+
 const app = express()
 dotenv.config();
+
+app.use((req, res, next) => {
+    req.setTimeout(600000); // 10 minutes
+    res.setTimeout(600000); // 10 minutes
+    next();
+  });
 
 app.use(cors({
     origin: 'http://localhost:5173', // Frontend URL
@@ -17,8 +34,9 @@ app.use(cors({
 }));
 
 
-app.use(express.urlencoded({extended:true}));
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));  // Increase limit to 10MB
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
 const port=8000
 app.use(cookieParser());
 
