@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './navbar';
+import Navbar from './Navbar/organizerNavbar.jsx';
 import AttendeeSignupForm from './pages/Auth/attendeeSignup.jsx';
 import AttendeeLoginForm from './pages/Auth/attendeeLogin.jsx';
 import OrganizerSignupForm from './pages/Auth/organizerSignup.jsx';
