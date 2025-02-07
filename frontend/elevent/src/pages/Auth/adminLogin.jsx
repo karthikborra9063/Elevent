@@ -1,5 +1,5 @@
 // AdminLoginForm.js
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -57,7 +57,8 @@ const AdminLoginForm = () => {
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
-
+  useEffect(()=>{
+  },[])
   return (
     <div
       style={{

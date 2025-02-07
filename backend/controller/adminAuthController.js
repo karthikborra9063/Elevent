@@ -9,9 +9,9 @@ import whiteListSchema from '../models/whiteListSchema';
 export const adminSignup = async (req, res) => {
 
     try{
-
-        const {name, email, password} = req.body;
-        if(!name){
+        
+        const {username, email, password} = req.body;
+        if(!username){
             return res.status(400).json({message:`Enter your name please`});
         }
         if(!email){
@@ -24,7 +24,7 @@ export const adminSignup = async (req, res) => {
         const hashPassword =await bcrypt.hash(password, salt);
 
         const admin =new adminModel({
-            name,
+            username,
             email,
             password:hashPassword
         })

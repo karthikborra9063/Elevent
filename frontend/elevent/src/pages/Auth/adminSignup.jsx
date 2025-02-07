@@ -5,7 +5,7 @@ import axios from "axios";
 
 const AdminSignupForm = () => {
   const [formData, setFormData] = useState({
-    name: "",
+    username: "",
     email: "",
     password: "",
     role: "",
@@ -18,20 +18,24 @@ const AdminSignupForm = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-
+  
     if (type === "checkbox") {
       setFormData({
         ...formData,
         role: checked ? value : "",
       });
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
     }
   };
+  
 
   const validateForm = () => {
     let errors = {};
-    if (!formData.name) errors.name = "Name is required.";
+    if (!formData.username) errors.username = "userame is required.";
     if (!formData.email) errors.email = "Email is required.";
     if (!formData.password) errors.password = "Password is required.";
     if (!formData.role) errors.role = "Role selection is required.";
@@ -89,17 +93,17 @@ const AdminSignupForm = () => {
             }`}
           >
             <Form.Group className="mb-3" controlId="formName">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>username</Form.Label>
               <Form.Control
                 type="text"
-                name="name"
+                name="username"
                 placeholder="Enter name"
-                value={formData.name}
+                value={formData.username}
                 onChange={handleChange}
-                isInvalid={!!errors.name}
+                isInvalid={!!errors.username}
               />
               <Form.Control.Feedback type="invalid">
-                {errors.name}
+                {errors.username}
               </Form.Control.Feedback>
             </Form.Group>
 

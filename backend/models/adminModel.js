@@ -1,7 +1,7 @@
 import mongoose, { mongo } from "mongoose";
 import whiteList from "./whiteListSchema";
 const adminSchema = new mongoose.Schema({
-    name:{
+    username:{
         type:String,
         required:true,
     },
