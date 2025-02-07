@@ -95,19 +95,19 @@ const eventSchema = new mongoose.Schema({
     // images:[{
     //     type:String,
     // }],
-    // banner:{
-    //     type:String,
-    //     required:true,
-    // },
-    speakers:[{
+    banner:{
         type:String,
-    }],
-    services:[{
+        required:true,
+    },
+    speakers:{
+        type:String,
+    },
+    services:{
         type:String}
-    ],
-    sponsers:[{
+    ,
+    sponsers:{
         type:String,
-    }],
+    },
     status:{
         type:String,
         enum:['pending','approved','cancled','completed'],

@@ -15,6 +15,7 @@ import axios from "axios";
 function BasicExample() {
   const navigate = useNavigate();
   const [organizerName,setOrganizerName]=useState("Organizer");
+  const [checkLogin,setCheckLogin] = useState(false);
   const buttonStyle = {
     backgroundColor: "#1e1e1e",
     border: "1px solid #444",

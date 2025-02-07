@@ -94,8 +94,60 @@ export const updateProfileImage = async (req, res) => {
       console.error("Internal Server Error:", err);
       res.status(500).json({ error: "Internal server error" });
     }
-  };
-  export const updateCoverImage = async (req, res) => {
+};
+export const updateEventBanner = async (req, res) => {
+    try {
+        if (!req.file) {
+          return res.status(400).json({ error: "No image uploaded" });
+        }
+        // Fetch the current profile image URL from the database
+        const currentOrganizer = await organizer.findById(req.user.id);
+        if (!currentOrganizer) {
+          return res.status(404).json({ error: "Organizer not found" });
+        }
+        const currentImageUrl = currentOrganizer.banner;
+        if (currentImageUrl) {
+          // Extract public ID from Cloudinary URL
+          const publicId = currentImageUrl.split("/").pop().split(".")[0];
+    
+          // Delete previous image from Cloudinary
+          await cloudinary.uploader.destroy(`banner_images/${publicId}`);
+        }
+    
+        // Upload the new image to Cloudinary
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "banner_images" },
+          async (error, result) => {
+            if (error) {
+              console.error("Cloudinary Upload Error:", error);
+              return res.status(500).json({ error: "Failed to upload image to Cloudinary" });
+            }
+    
+            try {
+              // Update profile image in database
+              const {eventId}=req.body;
+              const updatedEvent = await event.findByIdAndUpdate(
+                eventId,
+                { banner: result.secure_url },
+                { new: true }
+              );
+    
+              res.json({ success: true, banner: updatedEvent.banner });
+            } catch (err) {
+              console.error("Database Update Error:", err);
+              res.status(500).json({ error: "Failed to update profile image" });
+            }
+          }
+        );
+    
+        // Pipe the uploaded image file (buffer) to Cloudinary
+        streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+      } catch (err) {
+        console.error("Internal Server Error:", err);
+        res.status(500).json({ error: "Internal server error" });
+      }
+}
+export const updateCoverImage = async (req, res) => {
     try {
       if (!req.file) {
         return res.status(400).json({ error: "No image uploaded" });
@@ -147,11 +199,10 @@ export const updateProfileImage = async (req, res) => {
       console.error("Internal Server Error:", err);
       res.status(500).json({ error: "Internal server error" });
     }
-  };
+};
 export const createEvent = async (req,res)=>{
     const {eventname,category,startDate,endDate,venue,address,eventType,ticketsRequired,price,maxAttendees} = req.body;
     const {speakers,services,sponsers} = req.body;
-    // let {images,banner} = req.body;
     const { street, city, state, postalCode, country } = address;
 
 
@@ -163,7 +214,7 @@ export const createEvent = async (req,res)=>{
             return res.status(404).json({message:"User not found"});
         }
         if(!eventname){
-            return res.status(404).json({message:"Eventname is mandatory"});
+            return res.status(404).json({message:"eventname is mandatory"});
         }
         if(!category){
             return res.status(404).json({message:"categoty is mandatory"});
@@ -202,7 +253,7 @@ export const createEvent = async (req,res)=>{
             return res.status(404).json({message:"Enter the sponsers list of the event(promotional purpose)"});
         }
 
-        const newEvent =new event({
+        const newevent =new event({
             eventname,
             category,
             startDate,
@@ -217,9 +268,9 @@ export const createEvent = async (req,res)=>{
             services,
             sponsers
         })
-        newEvent.organizer=organizerId;
-        await newEvent.save();
-        // await org.events.push(newEvent._id.toString());
+        newevent.organizer=organizerId;
+        await newevent.save();
+        // await org.events.push(newevent._id.toString());
         const subject = `${eventname} - created successfully`;
         const message = "Your event has been successfully created! 🎉 Attendees can now view and register for your event. Thank you for using our platform to bring your event to life!";
         const notifyOrganizer =new organizerNotification({
@@ -233,23 +284,36 @@ export const createEvent = async (req,res)=>{
         return res.status(200).json({success:"Successful"});
         
     }catch(err){
-        console.log(`Error occured at createEvent controller`);
+        console.log(`Error occured at createevent controller`);
         return res.status(500).json({error:`Internal error has occured - ${err}`});
     }
-}
+};
 export const eventList =async (req, res) => {
     try{
         const userId = req.user._id;
         if(!userId){
             return res.status(404).json({notFound:"User not found"});
         }
-        const events =await event.findMany({organizer:userId});
+        const events = await event.find({ organizer: userId });
         return res.status(200).json({"events":events});
     }catch(err){
-        console.log(`Error occured at eventList Controller`);
+        console.log(`Error occured at eventList Controller -${err}`);
         return res.status(500).json({error:`Internal error has occured - ${err}`});
     }
-}
+};
+export const getEvent = async (req, res) =>{
+    try{
+        const eventId = req.params.eventId;
+        const eventDetails = await event.findById(eventId);
+        if(!eventDetails){
+            return res.status(404).json({error:"event not found"});
+        }
+        return res.json(eventDetails);
+    }catch(err){
+        console.log(`Error occured at getEvent Controller -${err}`);
+        return res.status(500).json({error:`Internal error has occured - ${err}`});
+    }
+};
 export const getMe = async (req, res) => {
     try{
 

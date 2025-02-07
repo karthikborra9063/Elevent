@@ -241,52 +241,52 @@ export const addArtist = async (req, res) => {
 
 }
 
-export const addArtistImage = async (req, res) => {
-    try {
-        if (!req.file) {
-          return res.status(400).json({ error: "No image uploaded" });
-        }
+// export const addArtistImage = async (req, res) => {
+//     try {
+//         if (!req.file) {
+//           return res.status(400).json({ error: "No image uploaded" });
+//         }
     
-        // Fetch the current profile image URL from the database
-        const currentAdmin = await adminModel.findById(req.user.id);
-        if (!currentAdmin) {
-          return res.status(404).json({ error: "Organizer not found" });
-        }
+//         // Fetch the current profile image URL from the database
+//         const currentAdmin = await adminModel.findById(req.user.id);
+//         if (!currentAdmin) {
+//           return res.status(404).json({ error: "Organizer not found" });
+//         }
     
-        const currentImageUrl = currentAdmin.profileImg;
-        if (currentImageUrl) {
-          // Extract public ID from Cloudinary URL
-          const publicId = currentImageUrl.split("/").pop().split(".")[0];
+//         const currentImageUrl = currentAdmin.profileImg;
+//         if (currentImageUrl) {
+//           // Extract public ID from Cloudinary URL
+//           const publicId = currentImageUrl.split("/").pop().split(".")[0];
     
-          // Delete previous image from Cloudinary
-          await cloudinary.uploader.destroy(`profile_images/${publicId}`);
-        }
+//           // Delete previous image from Cloudinary
+//           await cloudinary.uploader.destroy(`profile_images/${publicId}`);
+//         }
     
-        // Upload the new image to Cloudinary
-        const uploadStream = cloudinary.uploader.upload_stream(
-          { folder: "profile_images" },
-          async (error, result) => {
-            if (error) {
-              console.error("Cloudinary Upload Error:", error);
-              return res.status(500).json({ error: "Failed to upload image to Cloudinary" });
-            }
+//         // Upload the new image to Cloudinary
+//         const uploadStream = cloudinary.uploader.upload_stream(
+//           { folder: "profile_images" },
+//           async (error, result) => {
+//             if (error) {
+//               console.error("Cloudinary Upload Error:", error);
+//               return res.status(500).json({ error: "Failed to upload image to Cloudinary" });
+//             }
     
-            try {
-              // Update profile image in database
-              const updatedOrganizer = await artistModel.findByIdAndUpdate(
-                req.user.id,
-                { profileImg: result.secure_url },
-                { new: true }
-              );
+//             try {
+//               // Update profile image in database
+//               const updatedOrganizer = await artistModel.findByIdAndUpdate(
+//                 req.user.id,
+//                 { profileImg: result.secure_url },
+//                 { new: true }
+//               );
     
-              res.json({ success: true, profileImg: updatedOrganizer.profileImg });
-            } catch (err) {
-              console.error("Database Update Error:", err);
-              res.status(500).json({ error: "Failed to update profile image" });
-            }
-          }
-        );
+//               res.json({ success: true, profileImg: updatedOrganizer.profileImg });
+//             } catch (err) {
+//               console.error("Database Update Error:", err);
+//               res.status(500).json({ error: "Failed to update profile image" });
+//             }
+//           }
+//         );
     
-        // Pipe the uploaded image file (buffer) to Cloudinary
-        streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
-}
+//         // Pipe the uploaded image file (buffer) to Cloudinary
+//         streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+// }

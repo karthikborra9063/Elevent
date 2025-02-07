@@ -5,10 +5,12 @@ import { AiOutlineBell, AiOutlineMail } from 'react-icons/ai';
 import { MdEventNote } from 'react-icons/md';
 import { FaUserCircle } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 const NotificationList = () => {
   // Sample data for notifications
   const navigate = useNavigate();
+  const apiBaseUrl = "http://localhost:8000";
   const notifications = [
     {
       id: 1,
@@ -44,7 +46,17 @@ const NotificationList = () => {
   const handleCardClick = () => {
       navigate(`temp`);
   };
+  const getNotifcationList = async(req,res) =>{
+    try{
 
+      const response = await axios.get(`${apiBaseUrl}/api/organizer/getNotifications`,{
+        withCredentials:true,
+      })
+
+    }catch(err){
+      console.log(`Error has occured - ${err.message}`);
+    }
+  }
   return (
     <div style={{ backgroundColor: '#121212', color: '#E0E0E0', minHeight: '100vh', padding: '40px' }}>
       <Container className="py-4" style={{ maxWidth: '900px', backgroundColor: '#1F1F1F', borderRadius: '12px', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>

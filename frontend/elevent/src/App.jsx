@@ -29,7 +29,7 @@ function App() {
         <Route path="profile" element={<OrganizerProfile/>}/>
         <Route path="create-event" element={<CreateEventForm/>}/>
         <Route path="organizer/events" element={<EventList/>}/>
-        <Route path="organizer/events/temp" element={<EventDetails/>}/>
+        <Route path="organizer/events/:eventId" element={<EventDetails/>}/>
         <Route path="organizer/notifications" element={<NotificationList/>}/>
         <Route path="organizer/notifications/temp" element={<NotificationDetails/>}/>
         <Route path="organizer/messageAdmin" element={<MessageAdmin/>}/>

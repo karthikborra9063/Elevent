@@ -4,8 +4,16 @@ import styles from './createEvent.module.css'
 
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 
+import { useNavigate } from "react-router-dom";
+
+import axios from "axios";
 
 const CreateEventForm = () => {
+
+  const apiBaseUrl = "http://localhost:8000";
+
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     eventname: "",
     category: "",
@@ -46,14 +54,19 @@ const CreateEventForm = () => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log(formData);
-    alert("Event Submitted Successfully");
+  const handleSubmit = async() => {
+    try{
+        const response=await axios.post(`${apiBaseUrl}/api/organizer/create-event`,formData, {
+        withCredentials: true,
+      });
+    }catch(err){
+        console.error(err);
+    }
   };
 
   return (
-    <Container className="p-4 rounded mt-5 " style={{ backgroundColor: "#121212", color: "#e0e0e0" }}>
+    <div className="p-4 rounded mt-5 " style={{ backgroundColor: "#121212", color: "#e0e0e0" }}>
+    {/* <Container className="p-4 rounded mt-5 " style={{ backgroundColor: "#121212", color: "#e0e0e0" }}> */}
       <h2 className="text-center mb-4">Create Event</h2>
       <Form onSubmit={handleSubmit}>
         <Row className="mb-3">
@@ -66,9 +79,9 @@ const CreateEventForm = () => {
                 placeholder="Enter event name"
                 value={formData.eventname}
                 onChange={handleChange}
-                className={styles.customPlaceholder}
                 required
                 style={{ backgroundColor: "#1e1e1e", color: "#F8FAFC", border: "1px solid #444" }}
+                className={styles.customPlaceholder}
               />
             </Form.Group>
           </Col>
@@ -318,14 +331,31 @@ const CreateEventForm = () => {
             </Form.Group>
           </Col>
           </Row>
-
+          <Row className="mb-3">
+          <Col>
+            <Form.Group>
+              <Form.Label>sponsers</Form.Label>
+              <Form.Control
+                type="text"
+                name="sponsers"
+                placeholder="Sponsers"
+                value={formData.sponsers}
+                onChange={handleChange}
+                className={styles.customPlaceholder}
+                required
+                style={{ backgroundColor: "#1e1e1e", color: "#fff", border: "1px solid #444" }}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
         <div className="text-center">
-          <Button type="submit" variant="primary">
+          <Button variant="primary" onClick={handleSubmit}>
             Submit Event
           </Button>
         </div>
       </Form>
-    </Container>
+    {/* </Container> */}
+    </div>
   );
 };
 
