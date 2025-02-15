@@ -9,8 +9,7 @@ import whiteListSchema from '../models/whiteListSchema';
 export const adminSignup = async (req, res) => {
 
     try{
-        
-        const {username, email, password} = req.body;
+        const {username, email, password,mobileNumber} = req.body;
         if(!username){
             return res.status(400).json({message:`Enter your name please`});
         }
@@ -20,13 +19,17 @@ export const adminSignup = async (req, res) => {
         if(!password){
             return res.status(400).json({message:"Enter your password please"}); 
         }
+        if(!mobileNumber){
+            return res.status(400).json({message:"Enter your mobile number please"});
+        }
         const salt =await bcrypt.genSalt(10);
         const hashPassword =await bcrypt.hash(password, salt);
 
         const admin =new adminModel({
             username,
             email,
-            password:hashPassword
+            password:hashPassword,
+            mobileNumber
         })
         admin.save();
         return res.status(200).json({admin});
@@ -48,7 +51,7 @@ export const adminLogin  = async (req,res)=>{
         return res.status(400).json({provide:`Please provide the role of the person properly`});
     }
     const admin = await adminModel
-  .findOne({ name: username })
+  .findOne({ username: username })
     if(!admin){
         return res.status(404).json({message:`Admin with the username ${username} not found`});
     }

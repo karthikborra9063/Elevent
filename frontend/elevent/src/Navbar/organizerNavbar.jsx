@@ -66,13 +66,6 @@ function BasicExample() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <NavDropdown title="Login" id="basic-nav-dropdown" menuVariant="dark">
-              <NavDropdown.Item as={Link} to="/attendee/login">Attendee</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/organizer/login">Organizer</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/admin/login">Admin</NavDropdown.Item>
-            </NavDropdown>
-          </Nav>
           <Form className="d-flex me-3">
             <Form.Control
               type="search"
@@ -92,7 +85,7 @@ function BasicExample() {
           <Nav className="ms-auto d-flex align-items-center">
             <Nav.Link
               as={Link}
-              to="/create-event"
+              to="/organizer/create-event"
               className="d-flex align-items-center gap-2 text-light ms-3 px-3 py-2 rounded shadow-sm"
               style={buttonStyle}
               onMouseEnter={(e) => handleHover(e, true)}
@@ -143,7 +136,7 @@ function BasicExample() {
                 <FaInfoCircle />
                 <span>Update to Attendees</span>
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/profile" className="d-flex align-items-center gap-2">
+              <NavDropdown.Item as={Link} to="/organizer/profile" className="d-flex align-items-center gap-2">
                 <FaUserEdit />
                 <span>Profile</span>
               </NavDropdown.Item>

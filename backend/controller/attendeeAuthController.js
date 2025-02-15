@@ -1,4 +1,4 @@
-import Attendee from "../models/attendee.js";
+import Attendee from "../models/attendeeModel.js";
 import bcrypt from "bcrypt";
 import generateToken from "../lib/utils/generateToken.js";
 
@@ -16,8 +16,9 @@ export const attendeeSignup=async (req,res)=>{
             password:hashPassword,
             mobileNumber
         });
+        console.log(user);
         await user.save();
-        generateToken(user._id,res);
+        generateToken(user._id,"attendee",res);
         return res.status(200).json({
             success:'Attendee created successfully',
         });
@@ -29,28 +30,28 @@ export const attendeeSignup=async (req,res)=>{
 
 export const attendeeLogin=async (req,res)=>{
     try{
-        const { userName, email, password } = req.body;
-        if(!userName||(!password && !email)){
+        const { userName, password } = req.body;
+        if(!userName||!password){
             return res.status(400).json({error:"Enter the username and password"})
         }
-        let user=await Attendee.findOne({$or:[{email:email},{userName:userName}]});
+        let user=await Attendee.findOne({userName:userName});
+        console.log(user);
         if(!user)
         {
-            return res.json({success:false,msg:"Invalid credintials"});
+            return res.status(401).json({ success: false, msg: "Invalid credentials" });
         }
         else{
             let validPassword=await bcrypt.compare(password,user?.password);
             if(!validPassword)
             {
-               return res.json({success:false,msg:"Invalid password"});
+                return res.status(401).json({ success: false, msg: "Invalid password" });
             }
             else
             {
-                generateToken(user._id,res);
+                generateToken(user._id,"attendee",res);
                 return res.status(200).json({
                     _id:user._id,
-                    username: user.userName,
-                    email: user.email,
+                    username: user.userName
                 })
             }
         }

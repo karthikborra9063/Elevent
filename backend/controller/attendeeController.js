@@ -1,20 +1,17 @@
 import Attendee from "../models/attendeeModel.js";
 import EventRegistration from "../models/eventRegistrationModel.js";
 import bcrypt from "bcrypt";
+import Event from '../models/eventModel.js';
+import Ticket from '../models/ticketModel.js'
+import mongoose from "mongoose";
 
 export const eventRegistration = async (req, res) => {
     try {
-        const { eventName, eventDate } = req.body;
+        const eventId = req.params.eventId;
         const attendeeId = req.user._id;
-
-        if (!eventName || !eventDate) {
-            return res.status(400).json({ message: "Event name and date are required" });
-        }
-
         // Create a new event registration
         const registration = await EventRegistration.create({
-            eventName,
-            eventDate,
+            event:eventId,
             attendee: attendeeId
         });
 
@@ -23,12 +20,13 @@ export const eventRegistration = async (req, res) => {
         if (!attendee) {
             return res.status(404).json({ message: "Attendee not found" });
         }
-        attendee.registeredEvents.push(registration._id);
+        attendee.registeredEvents.push(eventId);
         await attendee.save();
-
+        const eventDetails = await Event.findById(eventId);
         res.status(201).json({
             message: "Successfully registered for the event",
-            registration
+            registration,
+            eventDetails
         });
     } catch (err) {
         console.error("Error registering for event:", err);
@@ -36,8 +34,26 @@ export const eventRegistration = async (req, res) => {
     }
 };
 
+export const getName = async (req, res) => {
+    try{
+
+        const userId = req.user._id;
+        if(!userId){
+            return res.status(404).json({notFound:"User not found"});
+        }
+        const user  = await Attendee.findById(userId).select('-password');
+        if(!user){
+            return res.status(404).json({notFound:"User not found"})
+        }
+        return res.status(200).json({attendeeName:user.userName});
+    }catch(err){
+        console.log(`Error has occured at organizer get me functions`);
+        return res.status(500).json({error:`Internal error has occured -${err}`})
+    }
+}
 export const getMe = async (req, res) => {
     try {
+        console.log("hello");
         const userId = req.user._id;
         if (!userId) {
             return res.status(404).json({ message: "User ID not found" });
@@ -51,28 +67,19 @@ export const getMe = async (req, res) => {
         res.status(200).json({ user });
     } catch (err) {
         console.error("Error in getMe function:", err);
-        res.status(500).json({ error: Internal server error - ${err.message} });
+        res.status(500).json({ error: `Internal server error - ${err.message}` });
     }
 };
 
 export const updateAttendee = async (req, res) => {
     try {
-        const { userName, email, password, mobileNumber } = req.body;
+        const { userName, email, mobileNumber } = req.body;
         const userId = req.user._id;
         const profileImg = req.file?.path; // Assuming file upload middleware adds the file path to req.file
 
         let user = await Attendee.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "Attendee not found" });
-        }
-
-        // Hash the password if provided
-        if (password) {
-            if (password.length < 6) {
-                return res.status(400).json({ message: "Password should be at least 6 characters" });
-            }
-            const salt = await bcrypt.genSalt(10);
-            user.password = await bcrypt.hash(password, salt);
         }
 
         // Update other fields
@@ -83,34 +90,28 @@ export const updateAttendee = async (req, res) => {
 
         // Save updated user
         user = await user.save();
-
-        // Remove the password from the response
-        user.password = undefined;
-
         res.status(200).json({
             message: "Profile updated successfully",
             user,
         });
     } catch (err) {
         console.error("Error updating attendee profile:", err);
-        res.status(500).json({ error: Internal server error - ${err.message} });
+        res.status(500).json({ error: `Internal server error - ${err.message} `});
     }
 };
 
 export const createTicket = async (req, res) => {
     try {
-        const { eventId, bookingId, secretCode, qrCodeValue, attendeeId } = req.body;
-        
+        const { eventId, bookingId, secretCode, qrCodeValue} = req.body;
+        const attendeeId=req.user._id;
         const eventExists = await Event.findById(eventId);
         if (!eventExists) {
             return res.status(404).json({ message: "Event not found" });
         }
-
         const attendeeExists = await Attendee.findById(attendeeId);
         if (!attendeeExists) {
             return res.status(404).json({ message: "Attendee not found" });
         }
-
         const ticket = new Ticket({ eventId, bookingId, secretCode, qrCodeValue, attendeeId });
         await ticket.save();
         
@@ -128,6 +129,78 @@ export const getTicketById = async (req, res) => {
         }
         res.status(200).json(ticket);
     } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+        res.status(500).json({ message: error.message });
+    }
 };
+
+export const eventList =async (req, res) => {
+    try{
+        const userId = req.user._id;
+        if(!userId){
+            return res.status(404).json({notFound:"User not found"});
+        }
+        const events = await Event.find({});
+        return res.status(200).json({"events":events});
+    }catch(err){
+        console.log(`Error occured at eventList Controller -${err}`);
+        return res.status(500).json({error:`Internal error has occured - ${err}`});
+    }
+};
+
+export const myEventList = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        if (!userId) {
+            return res.status(404).json({ notFound: "User not found" });
+        }
+
+        if (!req.user || !req.user.registeredEvents || req.user.registeredEvents.length === 0) {
+            return res.status(200).json({ events: [] }); 
+        }
+        const eventIds = req.user.registeredEvents.map(id => new mongoose.Types.ObjectId(id));
+        const events = await Event.find({ _id: { $in: eventIds } });
+
+        return res.status(200).json({ events });
+    } catch (err) {
+        console.log(`Error occurred at myEventList Controller - ${err}`);
+        return res.status(500).json({ error: `Internal error has occurred - ${err}` });
+    }
+};
+
+export const getEvent = async (req, res) => {
+    try {
+        const eventId = req.params.eventId;
+
+        const eventDetails = await Event.findById(eventId);
+        if (!eventDetails) {
+            return res.status(404).json({ error: "Event not found" });
+        }
+
+        const isRegistered = req.user.registeredEvents.includes(eventId);
+
+        return res.json({ ...eventDetails.toObject(), isRegistered });
+    } catch (err) {
+        console.error(`Error occurred at getEvent Controller - ${err}`);
+        return res.status(500).json({ error: `Internal error has occurred - ${err}` });
+    }
+};
+
+export const search=async (req,res)=>{
+    try {
+        const { query } = req.query;
+        if (!query) return res.status(400).json({ error: "Query parameter is required" });
+    
+        const events = await Event.find({
+          $or: [
+            { eventName: { $regex: query, $options: "i" } }, // Case-insensitive search
+            { category: { $regex: query, $options: "i" } },
+            { speakers: { $regex: query, $options: "i" } },
+          ],
+        });
+    
+        res.json(events);
+      } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal Server Error" });
+      }
+}

@@ -1,10 +1,6 @@
 import mongoose from "mongoose";
 
 const adminNotficationSchema = new mongoose.Schema({
-    to:{
-        type:mongoose.Schema.Types.Mixed,
-        required:true,
-    },
     from:{
         type:mongoose.Schema.Types.ObjectId,
         required:true,
@@ -12,7 +8,7 @@ const adminNotficationSchema = new mongoose.Schema({
     },
     fromType:{
         type:String,
-        enum:['Organizer','Attendee','Admin'],
+        enum:['Organizer','Attendee'],
         required:true
     },
     subject:{
@@ -25,5 +21,4 @@ const adminNotficationSchema = new mongoose.Schema({
         required:true,
     }
 })
-
-export default mongoose.model('AdminNotification',adminNotficationSchema);
+export default mongoose.model('AdminNotification', adminNotficationSchema, 'AdminNotifications');

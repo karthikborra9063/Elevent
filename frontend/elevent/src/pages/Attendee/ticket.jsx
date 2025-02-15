@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
-import { Card, Row, Col } from "react-bootstrap";
-import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaTag, FaTicketAlt, FaKey } from "react-icons/fa";
+import { Card, Row, Col, Button } from "react-bootstrap";
+import { FaCalendarAlt, FaClock, FaMapMarkerAlt, FaTag, FaTicketAlt, FaKey, FaPrint } from "react-icons/fa";
 import axios from "axios";
 
 const generateRandomAlphanumeric = (length) => {
@@ -16,7 +16,9 @@ const generateRandomNumber = (length) => {
 
 const storeTicket = async (ticketData) => {
     try {
-        await axios.post("http://localhost:5000/api/tickets", ticketData);
+        await axios.post("http://localhost:8000/api/attendee/storeticket", ticketData, {
+            withCredentials: true,
+        });
         console.log("Ticket stored successfully");
     } catch (error) {
         console.error("Error storing ticket:", error);
@@ -28,20 +30,57 @@ const Ticket = () => {
     const event = location.state?.event;
     const secretCode = generateRandomAlphanumeric(8);
     const bookingId = generateRandomNumber(15);
-    
+
     useEffect(() => {
         const ticketData = {
-            eventId: event.id,
+            eventId: event?._id,
             bookingId,
             secretCode,
-            qrCodeValue: ${event.id}_${secretCode},
-            attendeeId: "attendee_id_placeholder", // Replace with actual attendee ID
+            qrCodeValue: `${event?._id}_${secretCode}`
         };
         storeTicket(ticketData);
     }, [event]);
 
+    const handlePrint = () => {
+        const ticketElement = document.getElementById("ticket-section"); // Select the ticket div
+        if (!ticketElement) return;
+    
+        const printWindow = window.open("", "_blank"); // Open new window
+    
+        if (printWindow) {
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Print Ticket</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; background-color: #F2F9FF; }
+                        .ticket-container { max-width: 600px; margin: auto; box-shadow: 0 6px 15px rgba(0,0,0,0.1); padding: 20px; border-radius: 12px; background-color: #fff; }
+                        img { max-width: 100%; border-radius: 12px; }
+                        .qr-container { margin: 20px 0; }
+                        .details p { text-align: left; font-size: 16px; margin: 5px 0; }
+                    </style>
+                </head>
+                <body>
+                    <div class="ticket-container">
+                        ${ticketElement.innerHTML} <!-- Copy ticket div -->
+                    </div>
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                        };
+                    </script>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        } else {
+            alert("Popup blocked! Allow popups to print the ticket.");
+        }
+    };    
+    
+
     return (
-        <div style={{ 
+        <div id="ticket-section" style={{ 
             maxWidth: "600px", 
             margin: "20px auto", 
             backgroundColor: "#F2F9FF", 
@@ -56,8 +95,8 @@ const Ticket = () => {
         }}>
             <Card.Img
                 variant="top"
-                src={event.banner}
-                alt={event.eventname}
+                src={event?.banner || '/images/banner.webp'}
+                alt={event?.eventname}
                 style={{ 
                     width: "100%", 
                     maxHeight: "220px", 
@@ -69,14 +108,14 @@ const Ticket = () => {
 
             <Row className="g-3 p-3 w-100">
                 <Col md={7} className="d-flex flex-column justify-content-center">
-                    <h3 className="mb-3" style={{ fontWeight: "bold", textAlign: "left" }}>{event.eventname}</h3>
-                    <p style={{ textAlign: "left" }}><FaTag /> <strong>Category:</strong> {event.category}</p>
-                    <p style={{ textAlign: "left" }}><FaMapMarkerAlt /> <strong>Venue:</strong> {event.venue}</p>
-                    <p style={{ textAlign: "left" }}><FaCalendarAlt /> <strong>Date:</strong> {event.startDate}</p>
+                    <h3 className="mb-3" style={{ fontWeight: "bold", textAlign: "left" }}>{event?.eventname}</h3>
+                    <p style={{ textAlign: "left" }}><FaTag /> <strong>Category:</strong> {event?.category}</p>
+                    <p style={{ textAlign: "left" }}><FaMapMarkerAlt /> <strong>Venue:</strong> {event?.venue}</p>
+                    <p style={{ textAlign: "left" }}><FaCalendarAlt /> <strong>Date:</strong> {event?.startDate}</p>
                     <p style={{ textAlign: "left" }}> <FaClock /> <strong>Time:</strong> 10:00 AM </p>
                 </Col>
                 <Col md={5} className="text-center d-flex flex-column align-items-center justify-content-center">
-                    <QRCodeCanvas value={${event.id}_${secretCode}} size={128} bgColor="#fff" fgColor="#333" />
+                    <QRCodeCanvas value={`${event?.id}_${secretCode}`} size={128} bgColor="#fff" fgColor="#333" />
                     <p className="mt-2"><strong>Scan QR Code</strong></p>
                 </Col>
             </Row>
@@ -108,6 +147,11 @@ const Ticket = () => {
                     />
                 </div>
             </div>
+
+            {/* Print Button */}
+            <Button variant="primary" className="mt-3" onClick={handlePrint}>
+                <FaPrint className="me-2" /> Print Ticket
+            </Button>
         </div>
     );
 };

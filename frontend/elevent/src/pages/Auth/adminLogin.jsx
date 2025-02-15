@@ -1,12 +1,11 @@
-// AdminLoginForm.js
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
 const AdminLoginForm = () => {
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
     role: "",
   });
@@ -31,7 +30,7 @@ const AdminLoginForm = () => {
 
   const validateForm = () => {
     let errors = {};
-    if (!formData.email) errors.email = "Email is required.";
+    if (!formData.username) errors.username = "Username is required.";
     if (!formData.password) errors.password = "Password is required.";
     if (!formData.role) errors.role = "Role selection is required.";
     setErrors(errors);
@@ -43,7 +42,9 @@ const AdminLoginForm = () => {
     if (!validateForm()) return;
 
     try {
-      const response = await axios.post("/api/admins/login", formData); // Replace with your backend endpoint
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/auth/admin/login`, formData,{
+        withCredentials: true,
+      });
       setSuccessMessage("Login successful!");
       setErrorMessage("");
     } catch (error) {
@@ -57,8 +58,9 @@ const AdminLoginForm = () => {
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
-  useEffect(()=>{
-  },[])
+
+  useEffect(() => {}, []);
+
   return (
     <div
       style={{
@@ -72,13 +74,6 @@ const AdminLoginForm = () => {
         style={{ minHeight: "100vh" }}
       >
         <div className="w-100" style={{ maxWidth: "500px" }}>
-          {/* <Button
-            variant={darkMode ? "light" : "dark"}
-            onClick={toggleDarkMode}
-            className="mb-3"
-          >
-            Toggle {darkMode ? "Light" : "Dark"} Mode
-          </Button> */}
           <h2 className="text-center mb-4">Admin Login</h2>
           {successMessage && <Alert variant="success">{successMessage}</Alert>}
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
@@ -88,18 +83,18 @@ const AdminLoginForm = () => {
               darkMode ? "bg-dark text-light" : "bg-light"
             }`}
           >
-            <Form.Group className="mb-3" controlId="formEmail">
-              <Form.Label>Email</Form.Label>
+            <Form.Group className="mb-3" controlId="formUsername">
+              <Form.Label>Username</Form.Label>
               <Form.Control
-                type="email"
-                name="email"
-                placeholder="Enter email"
-                value={formData.email}
+                type="text"
+                name="username"
+                placeholder="Enter username"
+                value={formData.username}
                 onChange={handleChange}
-                isInvalid={!!errors.email}
+                isInvalid={!!errors.username}
               />
               <Form.Control.Feedback type="invalid">
-                {errors.email}
+                {errors.username}
               </Form.Control.Feedback>
             </Form.Group>
 

@@ -7,6 +7,7 @@ import connectMongoDb from './db/connectMongoDb.js';
 import authRouter from './routes/authRoutes.js';
 import organizerRouter from './routes/organizerRouter.js';
 import adminRouter from './routes/adminRouter.js';
+import homePageRouter from './routes/homePageRouter.js';
 
 import {v2 as cloudinary} from 'cloudinary';
 
@@ -42,6 +43,7 @@ app.use(cookieParser());
 app.use('/api/auth',authRouter);
 app.use('/api/organizer',organizerRouter);
 app.use('/api/admin',adminRouter)
+app.use('/api',homePageRouter);
 
 app.listen(port,()=>{
     console.log(`listening to the post with the port number ${port}`);

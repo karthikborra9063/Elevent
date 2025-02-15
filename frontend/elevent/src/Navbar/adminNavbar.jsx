@@ -9,13 +9,21 @@ import { FaUser } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { BsFillPersonPlusFill } from "react-icons/bs"; // Add Artist icon
 import { FiCalendar } from "react-icons/fi";
-import { FaBell, FaEnvelopeOpenText, FaSignOutAlt, FaUserEdit, FaInfoCircle } from "react-icons/fa";
+import {
+  FaBell,
+  FaEnvelopeOpenText,
+  FaSignOutAlt,
+  FaUserEdit,
+  FaInfoCircle,
+  FaUserTie
+} from "react-icons/fa";
 import axios from "axios";
+import AdminProfile from "../pages/Profile/adminProfile.jsx";
 
 function AdminNavbar() {
   const navigate = useNavigate();
   const [adminName, setAdminName] = useState("Admin");
-
+  const [showProfile, setShowProfile] = useState(false);
   const buttonStyle = {
     backgroundColor: "#1e1e1e",
     border: "1px solid #444",
@@ -42,9 +50,12 @@ function AdminNavbar() {
 
   const getAdminName = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/admin/getName", {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_SERVER}/api/admin/getName`,
+        {
+          withCredentials: true,
+        }
+      );
       setAdminName(response.data.adminName);
     } catch (err) {
       console.log(err);
@@ -63,13 +74,6 @@ function AdminNavbar() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <NavDropdown title="Login" id="basic-nav-dropdown" menuVariant="dark">
-              <NavDropdown.Item as={Link} to="/attendee/login">Attendee</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/organizer/login">Organizer</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/admin/login">Admin</NavDropdown.Item>
-            </NavDropdown>
-          </Nav>
           <Form className="d-flex me-3">
             <Form.Control
               type="search"
@@ -80,13 +84,28 @@ function AdminNavbar() {
             <Button variant="outline-light">Search</Button>
           </Form>
           <Nav className="me-auto">
-            <NavDropdown title="Location" id="basic-nav-dropdown" menuVariant="dark">
+            <NavDropdown
+              title="Location"
+              id="basic-nav-dropdown"
+              menuVariant="dark"
+            >
               <NavDropdown.Item href="#action/3.1">Hyderabad</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">Goa</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.3">Amaravati</NavDropdown.Item>
             </NavDropdown>
           </Nav>
           <Nav className="ms-auto d-flex align-items-center">
+          <Nav.Link
+              as={Link}
+              to="/admin/list-organizers"
+              className="d-flex align-items-center gap-2 text-light ms-3 px-3 py-2 rounded shadow-sm"
+              style={buttonStyle}
+              onMouseEnter={(e) => handleHover(e, true)}
+              onMouseLeave={(e) => handleHover(e, false)}
+            >
+              <FaUserTie  size={24} />
+              <span>Organizers</span>
+            </Nav.Link>
             <Nav.Link
               as={Link}
               to="/admin/add-artist"
@@ -100,17 +119,6 @@ function AdminNavbar() {
             </Nav.Link>
             <Nav.Link
               as={Link}
-              to="admin/events"
-              className="d-flex align-items-center gap-2 text-light ms-3 px-3 py-2 rounded shadow-sm"
-              style={buttonStyle}
-              onMouseEnter={(e) => handleHover(e, true)}
-              onMouseLeave={(e) => handleHover(e, false)}
-            >
-              <FiCalendar size={24} />
-              <span>Events</span>
-            </Nav.Link>
-            <Nav.Link
-              as={Link}
               to="admin/notifications"
               className="d-flex align-items-center gap-2 text-light ms-3 px-3 py-2 rounded shadow-sm"
               style={buttonStyle}
@@ -120,6 +128,31 @@ function AdminNavbar() {
               <FaBell size={24} />
               <span>Notifications</span>
             </Nav.Link>
+            <Nav className="me-auto">
+              <NavDropdown
+                title={
+                  <span className="d-flex align-items-center gap-2">
+                    <FiCalendar size={18} />
+                    Events
+                  </span>
+                }
+                id="events-dropdown"
+                menuVariant="dark"
+              >
+                <NavDropdown.Item as={Link} to="admin/approved-events">
+                  ✅ Approved Events
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="admin/approve-pending-events">
+                  ⏳ Approval Pending
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="admin/canceled-events">
+                  ❌ Canceled Events
+                </NavDropdown.Item>
+                <NavDropdown.Item as={Link} to="admin/completed-events">
+                  🎉 Completed Events
+                </NavDropdown.Item>
+              </NavDropdown>
+            </Nav>
             <NavDropdown
               title={
                 <div className="d-flex align-items-center gap-2">
@@ -132,20 +165,40 @@ function AdminNavbar() {
               className="ms-3 text-light"
               menuVariant="dark"
             >
-              <NavDropdown.Item as={Link} to="/admin/messageOrganizer" className="d-flex align-items-center gap-2">
+              <NavDropdown.Item
+                as={Link}
+                to="/admin/messageOrganizer"
+                className="d-flex align-items-center gap-2"
+              >
                 <FaEnvelopeOpenText />
                 <span>Message to Organizer</span>
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/admin/updateToAttendees" className="d-flex align-items-center gap-2">
+              <NavDropdown.Item
+                as={Link}
+                to="/admin/updateToAttendees"
+                className="d-flex align-items-center gap-2"
+              >
                 <FaInfoCircle />
                 <span>Update to Attendees</span>
               </NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/profile" className="d-flex align-items-center gap-2">
-                <FaUserEdit />
+              <NavDropdown.Item
+                onClick={() => setShowProfile(true)}
+                className="d-flex align-items-center gap-2"
+                style={{ cursor: "pointer" }}
+              >
+                <FaUserEdit size={18} />
                 <span>Profile</span>
               </NavDropdown.Item>
+
+              {showProfile && (
+                <AdminProfile onClose={() => setShowProfile(false)} />
+              )}
               <NavDropdown.Divider />
-              <NavDropdown.Item as={Link} onClick={adminLogOut} className="d-flex align-items-center gap-2">
+              <NavDropdown.Item
+                as={Link}
+                onClick={adminLogOut}
+                className="d-flex align-items-center gap-2"
+              >
                 <FaSignOutAlt />
                 <span>Logout</span>
               </NavDropdown.Item>

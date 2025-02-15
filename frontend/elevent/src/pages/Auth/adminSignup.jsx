@@ -7,6 +7,7 @@ const AdminSignupForm = () => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
+    mobileNumber:"",
     password: "",
     role: "",
   });
@@ -39,6 +40,7 @@ const AdminSignupForm = () => {
     if (!formData.email) errors.email = "Email is required.";
     if (!formData.password) errors.password = "Password is required.";
     if (!formData.role) errors.role = "Role selection is required.";
+    if(!formData.mobileNumber) errors.mobileNumber="MobileNumber section is required";
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -48,8 +50,11 @@ const AdminSignupForm = () => {
     if (!validateForm()) return;
 
     try {
-      const response = await axios.post("/api/admins/signup", formData); // Replace with your backend endpoint
-      setSuccessMessage("Signup successful!");
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/auth/admin/signup`, formData); // Replace with your backend endpoint
+      if(response.status==200){
+        console.log("signup successful");
+        setSuccessMessage("Signup successful!");
+      }
       setErrorMessage("");
     } catch (error) {
       setSuccessMessage("");
@@ -119,6 +124,20 @@ const AdminSignupForm = () => {
               />
               <Form.Control.Feedback type="invalid">
                 {errors.email}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formEmail">
+              <Form.Label>mobileNumber</Form.Label>
+              <Form.Control
+                type="text"
+                name="mobileNumber"
+                placeholder="Enter mobile number"
+                value={formData.mobileNumber}
+                onChange={handleChange}
+                isInvalid={!!errors.mobileNumber}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.mobileNumber}
               </Form.Control.Feedback>
             </Form.Group>
 
