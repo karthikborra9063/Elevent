@@ -4,21 +4,20 @@ import generateToken from "../lib/utils/generateToken.js";
 
 export const attendeeSignup=async (req,res)=>{
     try {
-        const { userName, email, password, mobileNumber} = req.body;
-        if (!userName || !email || !password) {
+        const { username, email, password, mobileNumber} = req.body;
+        if (!username || !email || !password) {
             return res.status(400).json({ success: false, msg: "All input fields are required" });
         }
         const salt=await bcrypt.genSalt(10);
         const hashPassword=await bcrypt.hash(password,salt);
-        const user = await Attendee.create({
-            userName,
+        const user = new Attendee({
+            username,
             email,
             password:hashPassword,
             mobileNumber
         });
-        console.log(user);
         await user.save();
-        generateToken(user._id,"attendee",res);
+        generateToken(user._id,"Attendee",res);
         return res.status(200).json({
             success:'Attendee created successfully',
         });
@@ -30,12 +29,11 @@ export const attendeeSignup=async (req,res)=>{
 
 export const attendeeLogin=async (req,res)=>{
     try{
-        const { userName, password } = req.body;
-        if(!userName||!password){
+        const { username, password } = req.body;
+        if(!username||!password){
             return res.status(400).json({error:"Enter the username and password"})
         }
-        let user=await Attendee.findOne({userName:userName});
-        console.log(user);
+        let user=await Attendee.findOne({username:username});
         if(!user)
         {
             return res.status(401).json({ success: false, msg: "Invalid credentials" });
@@ -48,10 +46,10 @@ export const attendeeLogin=async (req,res)=>{
             }
             else
             {
-                generateToken(user._id,"attendee",res);
+                generateToken(user._id,"Attendee",res);
                 return res.status(200).json({
                     _id:user._id,
-                    username: user.userName
+                    username: user.username
                 })
             }
         }

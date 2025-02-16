@@ -43,8 +43,10 @@ const SignupForm = () => {
     if (!validateForm()) return;
 
     try {
-      const response = await axios.post("/api/login", formData); // Replace with your backend endpoint
-      setSuccessMessage("Login successful!");
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/auth/attendee/signup`, formData,{
+        withCredentials:true,
+      }); 
+      setSuccessMessage("signup successful!");
       setErrorMessage("");
     } catch (error) {
       setSuccessMessage("");
@@ -130,7 +132,7 @@ const SignupForm = () => {
 
           {/* Submit Button */}
           <Button variant="primary" type="submit" className="w-100">
-            Login
+            Signup
           </Button>
         </Form>
       </div>

@@ -60,7 +60,6 @@ function BasicExample() {
             })
             setAttendeeName(response.data.attendeeName);
             setCheckLogin(true);
-            console.log(response.data.attendeeName);
         }catch(err){
           console.log(err);
         }
@@ -144,7 +143,7 @@ function BasicExample() {
               className="ms-3 text-light"
               menuVariant="dark"
             >
-              <NavDropdown.Item as={Link} to="/profile" className="d-flex align-items-center gap-2">
+              <NavDropdown.Item as={Link} to="attendee/profile" className="d-flex align-items-center gap-2">
                 <FaUserEdit />
                 <span>Profile</span>
               </NavDropdown.Item>

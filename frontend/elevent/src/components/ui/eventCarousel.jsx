@@ -12,7 +12,7 @@ const EventCarousel = () => {
   const [banners,setBanners] =useState([]);
   const fetchBanners =async ()=>{
     try{
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}/api/banners`,{
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}/api/home/banners`,{
         withCredentials:true,
       });
       if(response.status === 200){

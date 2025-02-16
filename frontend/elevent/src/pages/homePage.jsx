@@ -7,7 +7,7 @@ const EventList = () => {
   const [events,setEvents] = useState([]);
   const fetchEvents =async ()=>{
     try{
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}/api/events`,{
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}/api/home/events`,{
         withCredentials:true,
       });
       console.log(response);

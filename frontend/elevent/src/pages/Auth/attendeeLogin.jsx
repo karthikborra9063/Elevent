@@ -3,8 +3,12 @@ import React, { useState } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
+  const Navigator = useNavigate();
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
@@ -28,9 +32,13 @@ const LoginForm = () => {
     if (!validateForm()) return;
 
     try {
-      const response = await axios.post("/api/login", formData); // Replace with your backend endpoint
-      setSuccessMessage("Login successful!");
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/auth/attendee/login`, formData,{
+        withCredentials:true,
+      }); // Replace with your backend endpoint
+      // setSuccessMessage("Login successful!");
       setErrorMessage("");
+      toast.success("Login successful!");
+      Navigator("/");
     } catch (error) {
       setSuccessMessage("");
       setErrorMessage(

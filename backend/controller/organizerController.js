@@ -266,7 +266,8 @@ export const createEvent = async (req,res)=>{
             maxAttendees,
             speakers,
             services,
-            sponsers
+            sponsers,
+            banner:"",
         })
         newevent.organizer=organizerId;
         await newevent.save();

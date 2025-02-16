@@ -11,7 +11,8 @@ const EventList = () => {
     useEffect(() => {
         const fetchEvent = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/api/attendee/myevent-list", {
+                console.log("Hello")
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}/api/attendee/myevent-list`, {
                     withCredentials: true,
                 });
                 console.log(response)

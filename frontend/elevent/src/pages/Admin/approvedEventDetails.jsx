@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from "react";
+
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import {
   Container,
   Row,
@@ -41,7 +45,22 @@ const AdminEventDetails = () => {
       console.log(`Error occurred - ${e.message}`);
     }
   };
+  const rejectEvent = async (req,res)=>{
+    try{
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/admin/${eventId}/CancelEvent`,{},{
+        withCredentials:true
+      });
+      if(response.status==200){
+        toast.success("Event rejected successfully");
+      }
+      else{
+        toast.error("Some error has occurred");
+      }
 
+    }catch(err){
+      console.log(err);
+    }
+  }
   useEffect(() => {
     getEvent();
   }, []);
@@ -96,10 +115,7 @@ const AdminEventDetails = () => {
           >
             View Organizer Profile
           </Button>
-          <Button variant="success" className="me-2">
-            Approve
-          </Button>
-          <Button variant="danger">Reject</Button>
+          <Button variant="danger" onClick={ rejectEvent}>Reject</Button>
         </div>
 
         <Row className="gy-4">

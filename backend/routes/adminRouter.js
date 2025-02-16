@@ -23,8 +23,8 @@ router.get('/notifications',adminProtectRoute,getNotifications);
 router.get('/notification/:notificationId',adminProtectRoute,getNotification);
 router.post('/message-organizer',adminProtectRoute,MessageOrganizer)
 router.delete('/deleteOrganizer',adminProtectRoute,deleteOrganizer);
-router.put('/:eventId/ApproveEvent',superadminProtectRoute,approveEvent);
-router.put('/:eventId/CancelEvent',superadminProtectRoute, cancelEvent);
+router.post('/:eventId/ApproveEvent',adminProtectRoute,approveEvent);
+router.post('/:eventId/CancelEvent',adminProtectRoute, cancelEvent);
 router.put('/:adminId/approveAdmin',superadminProtectRoute,approveAdmin);
 router.put('/:adminId/rejectAdmin', superadminProtectRoute,rejectAdmin);
 export default router;

@@ -4,17 +4,77 @@ import bcrypt from "bcrypt";
 import Event from '../models/eventModel.js';
 import Ticket from '../models/ticketModel.js'
 import mongoose from "mongoose";
+import {v2 as cloudinary} from 'cloudinary';
+import streamifier from "streamifier";
+
+
+export const updateProfileImage = async (req, res) => {
+    try {
+      if (!req.file) {
+
+        return res.status(400).json({ error: "No image uploaded" });
+      }
+  
+      // Fetch the current profile image URL from the database
+      const currentAttendee = await Attendee.findById(req.user._id);
+      if (!currentAttendee) {
+        return res.status(404).json({ error: "Attendee not found" });
+      }
+      const currentImageUrl = currentAttendee.profileImg;
+      if (currentImageUrl) {
+        // Extract public ID from Cloudinary URL
+        const publicId = currentImageUrl.split("/").pop().split(".")[0];
+  
+        // Delete previous image from Cloudinary
+        await cloudinary.uploader.destroy(`profile_images/${publicId}`);
+      }
+    //   Upload the new image to Cloudinary
+      const uploadStream = cloudinary.uploader.upload_stream(
+        { folder: "profile_images" },
+        async (error, result) => {
+          if (error) {
+            console.error("Cloudinary Upload Error:", error);
+            return res.status(500).json({ error: "Failed to upload image to Cloudinary" });
+          }
+  
+          try {
+            // Update profile image in database
+            const updatedAttendee = await Attendee.findByIdAndUpdate(
+              req.user._id,
+              {profileImg: result.secure_url },
+              { new: true }
+            );
+  
+            res.json({ success: true, profileImg: updatedAttendee.profileImg });
+          } catch (err) {
+            console.error("Database Update Error:", err);
+            res.status(500).json({ error: "Failed to update profile image" });
+          }
+        }
+      );
+  
+      // Pipe the uploaded image file (buffer) to Cloudinary
+      streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+    } catch (err) {
+      console.error("Internal Server Error:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
 
 export const eventRegistration = async (req, res) => {
     try {
         const eventId = req.params.eventId;
         const attendeeId = req.user._id;
         // Create a new event registration
-        const registration = await EventRegistration.create({
+        const eventDetails = await Event.findById(eventId);
+        if(eventDetails.currentAttendees==eventDetails.maxAttendees){
+            return res.status(400).json({completed:"All the bookings are completd"});
+        }
+        const registration = new EventRegistration({
             event:eventId,
             attendee: attendeeId
         });
-
+        await registration.save();
         // Update the attendee's registered events list
         const attendee = await Attendee.findById(attendeeId);
         if (!attendee) {
@@ -22,7 +82,9 @@ export const eventRegistration = async (req, res) => {
         }
         attendee.registeredEvents.push(eventId);
         await attendee.save();
-        const eventDetails = await Event.findById(eventId);
+        const currentAttendee = eventDetails.currentAttendees;
+        eventDetails.currentAttendees=currentAttendee+1;
+        eventDetails.save();
         res.status(201).json({
             message: "Successfully registered for the event",
             registration,
@@ -36,7 +98,6 @@ export const eventRegistration = async (req, res) => {
 
 export const getName = async (req, res) => {
     try{
-
         const userId = req.user._id;
         if(!userId){
             return res.status(404).json({notFound:"User not found"});
@@ -45,7 +106,7 @@ export const getName = async (req, res) => {
         if(!user){
             return res.status(404).json({notFound:"User not found"})
         }
-        return res.status(200).json({attendeeName:user.userName});
+        return res.status(200).json({attendeeName:user.username});
     }catch(err){
         console.log(`Error has occured at organizer get me functions`);
         return res.status(500).json({error:`Internal error has occured -${err}`})
@@ -53,7 +114,6 @@ export const getName = async (req, res) => {
 }
 export const getMe = async (req, res) => {
     try {
-        console.log("hello");
         const userId = req.user._id;
         if (!userId) {
             return res.status(404).json({ message: "User ID not found" });
@@ -134,16 +194,37 @@ export const getTicketById = async (req, res) => {
 };
 
 export const eventList =async (req, res) => {
-    try{
-        const userId = req.user._id;
-        if(!userId){
-            return res.status(404).json({notFound:"User not found"});
-        }
-        const events = await Event.find({});
-        return res.status(200).json({"events":events});
-    }catch(err){
-        console.log(`Error occured at eventList Controller -${err}`);
-        return res.status(500).json({error:`Internal error has occured - ${err}`});
+    try {
+        const currentDate = new Date(); // Get the current date and time
+        
+        const events = await eventModel.find({ 
+                startDate: { $gt: currentDate } ,
+                status:"Approved", // Start date greater than current date
+            })
+            .sort({ startDate: 1 }) // Sort by start date ascending (soonest first)
+            .limit(20) // Get top 20 events
+            .select('_id eventname startDate address.city banner category services') // Select required fields
+            .lean(); // Get plain JS objects instead of Mongoose documents
+        
+        // Format the response
+        const formattedEvents = events.map((event) => ({
+            id:event._id,
+            title: event.eventname,
+            date: new Date(event.startDate).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            }), // Format date as "Month Day, Year"
+            location: event.address.city,
+            description: event.services || "Experience an unforgettable event.",
+            banner: event.banner,
+            category: event.category
+        }));
+
+        res.status(200).json(formattedEvents);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
     }
 };
 
@@ -175,9 +256,7 @@ export const getEvent = async (req, res) => {
         if (!eventDetails) {
             return res.status(404).json({ error: "Event not found" });
         }
-
-        const isRegistered = req.user.registeredEvents.includes(eventId);
-
+        const isRegistered=req.user.registeredEvents.includes(eventId);
         return res.json({ ...eventDetails.toObject(), isRegistered });
     } catch (err) {
         console.error(`Error occurred at getEvent Controller - ${err}`);

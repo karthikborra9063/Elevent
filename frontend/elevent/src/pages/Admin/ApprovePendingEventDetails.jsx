@@ -1,4 +1,9 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import {
   Container,
   Row,
@@ -17,7 +22,6 @@ import {
   FaBuilding,
   FaConciergeBell,
 } from "react-icons/fa";
-import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 
 const AdminEventDetails = () => {
@@ -25,7 +29,38 @@ const AdminEventDetails = () => {
   const apiBaseUrl = "http://localhost:8000";
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const ApproveEvent = async (req,res)=>{
+    try{
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/admin/${eventId}/ApproveEvent`,{},{
+        withCredentials:true
+      });
+      if(response.status==200){
+        toast.success("Event approved successfully");
+      }
+      else{
+        toast.error("Some error has occurred");
+      }
 
+    }catch(err){
+      console.log(err);
+    }
+  }
+  const rejectEvent = async (req,res)=>{
+    try{
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/admin/${eventId}/CancelEvent`,{},{
+        withCredentials:true
+      });
+      if(response.status==200){
+        toast.success("Event rejected successfully");
+      }
+      else{
+        toast.error("Some error has occurred");
+      }
+
+    }catch(err){
+      console.log(err);
+    }
+  }
   const getEvent = async () => {
     try {
       const response = await axios.get(
@@ -96,10 +131,10 @@ const AdminEventDetails = () => {
           >
             View Organizer Profile
           </Button>
-          <Button variant="success" className="me-2">
+          <Button variant="success" className="me-2" onClick={ApproveEvent}>
             Approve
           </Button>
-          <Button variant="danger">Reject</Button>
+          <Button variant="danger" onClick={rejectEvent}>Reject</Button>
         </div>
 
         <Row className="gy-4">

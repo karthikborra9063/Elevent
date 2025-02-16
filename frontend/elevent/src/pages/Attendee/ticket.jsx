@@ -16,7 +16,7 @@ const generateRandomNumber = (length) => {
 
 const storeTicket = async (ticketData) => {
     try {
-        await axios.post("http://localhost:8000/api/attendee/storeticket", ticketData, {
+        await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/attendee/storeticket`, ticketData, {
             withCredentials: true,
         });
         console.log("Ticket stored successfully");

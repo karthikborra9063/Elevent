@@ -11,10 +11,6 @@ export const approveEvent = async (req, res) => {
     if(!admin){
         return res.status(401).json({unauthorized:`Unaauthorized access to the admin page`})
     }
-    const isSuperAdmin =await whiteListSchema.find(admin.email);
-    if(!isSuperAdmin){
-        return res.status(401).json({unauthorized:`Admin has no access to approve the event`})
-    }
     const {eventId} = req.params;
     if(!eventId){
         return res.status(404).json({notFound:`Event not found`})
@@ -57,10 +53,6 @@ export const cancelEvent =async (req, res) => {
     const admin = req.user._id;
     if(!admin){
         return res.status(401).json({unauthorized:`Unaauthorized access to the admin page`})
-    }
-    const isSuperAdmin =await whiteListSchema.find(admin.email);
-    if(!isSuperAdmin){
-        return res.status(401).json({unauthorized:`Admin has no access to cancel the event`})
     }
     const {eventId} = req.params;
     if(!eventId){

@@ -3,9 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Card, ListGroup, Badge, Button } from "react-bootstrap";
 import { FaMapMarkerAlt, FaCalendarAlt, FaUsers, FaDollarSign, FaMicrophone, FaBuilding, FaConciergeBell } from "react-icons/fa";
 import axios from "axios";
+import { isAuthenticated } from "../utils/auth.js";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const EventDetails = () => {
-    const { id } = useParams();
+    const { eventId } = useParams();
     const navigate = useNavigate();
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -15,7 +19,9 @@ const EventDetails = () => {
     useEffect(() => {
         const fetchEvent = async () => {
             try {
-                const response = await axios.get(`/api/attendee/getevent/${id}`);
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}/api/home/eventDetails/${eventId}`,{
+                    withCredentials:true,
+                });
                 setEvent(response.data);
                 setIsRegistered(response.data.isRegistered); // Assuming API returns this
             } catch (err) {
@@ -25,18 +31,26 @@ const EventDetails = () => {
             }
         };
         fetchEvent();
-    }, [id]);
+    }, [eventId]);
 
     const handleRegister = async () => {
+        const decodedToken = isAuthenticated();
+        if (decodedToken == null || decodedToken.role !== "Attendee") {
+            toast.warning("Please login as an attendee");
+            return; // Exit the function since the condition is not met
+        }
         try {
-            const response = await axios.post(`/api/attendee/events/${id}/register`);
-            alert("You are registered! Your ticket will be displayed.");
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/attendee/events/${eventId}/register`,{},{
+                withCredentials: true
+            });
+            toast.success("You have successfully registered");
             setIsRegistered(true); // Update state after successful registration
             navigate(`/attendee/events/register/ticket`, { state: { event: response.data.eventDetails } });
         } catch (err) {
-            alert("Registration failed. Please try again.");
+            toast.warning(err.message);
         }
     };
+    
 
     if (loading) return <p>Loading event details...</p>;
     if (error) return <p>{error}</p>;
