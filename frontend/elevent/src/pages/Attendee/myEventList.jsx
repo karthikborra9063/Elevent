@@ -7,6 +7,22 @@ const EventList = () => {
     const navigate = useNavigate();
     const [events, setEvents] = useState([]);
     const [error, setError] = useState(null);
+    const getFormattedDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = date.getDate();
+        const suffix = (day) => {
+          if (day > 3 && day < 21) return 'th';
+          switch (day % 10) {
+            case 1: return 'st';
+            case 2: return 'nd';
+            case 3: return 'rd';
+            default: return 'th';
+          }
+        };
+        const month = date.toLocaleString('en-GB', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day}${suffix(day)} ${month} ${year}`;
+      };
 
     useEffect(() => {
         const fetchEvent = async () => {
@@ -61,7 +77,9 @@ const EventList = () => {
                                         <Card.Text className="mb-3">
                                             <div><strong>Category:</strong> {event.category || "N/A"}</div>
                                             <div><strong>Venue:</strong> {event.venue || "TBA"}</div>
-                                            <div><strong>Dates:</strong> {event.startDate} - {event.endDate}</div>
+                                            <div>
+                                                <strong>Dates:</strong> {getFormattedDate(event.startDate)} - {getFormattedDate(event.endDate)}
+                                            </div>
                                         </Card.Text>
                                     </Card.Body>
                                 </Card>

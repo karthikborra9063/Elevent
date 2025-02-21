@@ -5,6 +5,8 @@ import AttendeeTicket from '../pages/Attendee/ticket.jsx';
 import SearchEvents from '../pages/Attendee/searchEvents.jsx';
 import MyEventList from '../pages/Attendee/myEventList.jsx'
 import AttendeeProfile from '../pages/profile/attendeeProfile.jsx';
+import NotificationList from '../pages/Attendee/notificationList.jsx';
+import NotificationDetails from '../pages/Attendee/notificationDetails.jsx';
 
 function attendeePathRoute(){
     return (
@@ -16,6 +18,8 @@ function attendeePathRoute(){
             <Route path="search-events" element={<SearchEvents/>}/>
             <Route path="events/:id" element={<EventDetails/>}/>
             <Route path="events/register/ticket" element={<AttendeeTicket />} />
+            <Route path='notifications' element={<NotificationList/>}/>
+            <Route path='notifications/:notificationId' element={<NotificationDetails/>}/>
           </Routes>
       );
 }

@@ -14,17 +14,17 @@ const authenticateAttendee = async (req, res, next) => {
     try {
         const token = req.cookies?.jwt;
         if (!token) {
-            next();
+            return next();
         }
         
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         if (decoded.role !== 'Attendee') {
-            next();
+            return next();
         }
 
         const user = await attendeeModel.findById(decoded.userId).select('-password');
         if (!user) {
-           next();
+           return next();
         }
 
         req.user = user;

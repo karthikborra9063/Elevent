@@ -1,27 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, Container, Row, Col, Button } from 'react-bootstrap';
 import { AiOutlineMail, AiOutlineArrowLeft } from 'react-icons/ai';
 import { MdEventNote } from 'react-icons/md';
 import { FaUserCircle } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 
 const NotificationDetails = () => {
   const navigate = useNavigate();
-  const notification = {
-    id: 1,
-    from: "John Doe",
-    fromType: "Attendee",
-    subject: "Event Inquiry",
-    message: "Can you provide more details about the event?",
-    profileImage: "/images/sampleProfile.webp",
-    time: "2 hours ago",
-  };
+  const [notification,setNotification] = useState({});
+  const {notificationId}=useParams();
 
   const handleBackNotifications = () => {
-    navigate('/admin/notifications');
+    navigate('/organizer/notifications');
   };
-
+  const fetchNotification = async () => {
+    console.log(`${import.meta.env.VITE_BACKEND_SERVER}`)
+    try{
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}/api/organizer/notification/${notificationId}`,{
+        withCredentials:true,
+      });
+      console.log(response);
+      if(response.status === 200){
+        setNotification(response.data);
+      }
+    }catch(err){
+      console.log(err);
+    }
+  }
+  useEffect(()=>{
+    fetchNotification();
+  },[])
   return (
     <div
       style={{
@@ -55,17 +65,7 @@ const NotificationDetails = () => {
           <Card.Body>
             <Row className="align-items-center mb-4 gx-0"> {/* Prevents extra spacing */}
               <Col xs="auto">
-                {notification.profileImage ? (
-                  <img
-                    src={notification.profileImage}
-                    alt="Profile"
-                    width={80}
-                    height={80}
-                    className="rounded-circle border border-secondary"
-                  />
-                ) : (
-                  <FaUserCircle size={80} className="text-secondary" />
-                )}
+              <FaUserCircle size={80} className="text-secondary" />
               </Col>
               <Col style={{ minWidth: 0 }}> {/* Prevents content overflow */}
                 <h4 style={{ color: '#BB86FC', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

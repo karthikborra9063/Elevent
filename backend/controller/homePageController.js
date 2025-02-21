@@ -6,7 +6,7 @@ export const getTopBanners = async (req,res)=>{
         
         const events = await eventModel.find({ 
                 startDate: { $gt: currentDate } ,
-                status:"Approved", // Start date greater than current date
+                status:"approved", // Start date greater than current date
             })
             .sort({ startDate: 1 }) // Sort by start date ascending (soonest first)
             .limit(5) // Get top 5 events
@@ -35,7 +35,7 @@ export const getTopEvents = async (req, res) => {
         
         const events = await eventModel.find({ 
                 startDate: { $gt: currentDate } ,
-                status:"Approved", // Start date greater than current date
+                status:"approved", // Start date greater than current date
             })
             .sort({ startDate: 1 }) // Sort by start date ascending (soonest first)
             .limit(20) // Get top 20 events
@@ -64,23 +64,22 @@ export const getTopEvents = async (req, res) => {
     }
 }
 export const getEventDetails=async (req, res) => {
- try {
-        const eventId = req.params.eventId;
-
-        const eventDetails = await eventModel.findById(eventId);
-        if (!eventDetails) {
-            return res.status(404).json({ error: "Event not found" });
-        }
-        let isRegistered=false;
-        const User=await Attendee.findById(req?.user?._id);
-        if(User){
-            isRegistered=User.registeredEvents.includes(eventId);
-        }
-
-        return res.json({ ...eventDetails.toObject(),isRegistered});
-    } catch (err) {
-        console.error(`Error occurred at getEvent Controller - ${err}`);
-        return res.status(500).json({ error: `Internal error has occurred - ${err}` });
-    }
-
-}
+    try {
+           const eventId = req.params.eventId;
+   
+           const eventDetails = await eventModel.findById(eventId);
+           if (!eventDetails) {
+               return res.status(404).json({ error: "Event not found" });
+           }
+           let isRegistered=false;
+           const User=await Attendee.findById(req?.user?._id);
+           if(User){
+               isRegistered=User.registeredEvents.includes(eventId);
+           }
+           return res.json({ ...eventDetails.toObject(),isRegistered});
+       } catch (err) {
+           console.error(`Error occurred at getEvent Controller - ${err}`);
+           return res.status(500).json({ error: `Internal error has occurred - ${err}` });
+       }
+   
+   }

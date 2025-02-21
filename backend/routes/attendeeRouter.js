@@ -1,6 +1,6 @@
 import express from 'express';
 import protectRoute from '../middleware/attendeeProtectRoute.js';
-import { createTicket, eventList, eventRegistration, getEvent, getMe, getName, myEventList, search, updateAttendee, updateProfileImage } from '../controller/attendeeController.js';
+import { createTicket, eventList, eventRegistration, getEvent, getMe, getName, myEventList, search, updateAttendee, updateProfileImage,attendeeNotifications,attendeeNotification } from '../controller/attendeeController.js';
 import multer from 'multer';
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -16,5 +16,7 @@ router.get(`/getevent/:eventId`, protectRoute, getEvent);
 router.put('/profileImageUpdate', protectRoute, upload.single('profileImg'), updateProfileImage);
 router.put('/profileUpdate', protectRoute, updateAttendee);
 router.get('/search', protectRoute, search);
+router.get('/notifications',protectRoute,attendeeNotifications);
+router.get('/notifications/:notificationId', protectRoute,attendeeNotification);
 
 export default router;

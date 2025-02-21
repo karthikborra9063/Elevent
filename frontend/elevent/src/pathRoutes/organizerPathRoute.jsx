@@ -22,7 +22,7 @@ function organizerPathRoute(){
             <Route path="events" element={<EventList/>}/>
             <Route path="events/:eventId" element={<EventDetails/>}/>
             <Route path="notifications" element={<NotificationList/>}/>
-            <Route path="notifications/temp" element={<NotificationDetails/>}/>
+            <Route path="notification/:notificationId" element={<NotificationDetails/>}/>
             <Route path="messageAdmin" element={<MessageAdmin/>}/>
             <Route path="updateToAttendees" element={<UpdateToAttendee/>}/>
           </Routes>

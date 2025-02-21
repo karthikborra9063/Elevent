@@ -7,6 +7,7 @@ import adminNotificationModel from "../models/adminNotificationModel.js";
 import streamifier from "streamifier";
 import { cv2 as cloudinary } from "cloudinary";
 import mongoose from "mongoose";
+import organizerNotificationModel from "../models/organizerNotificationModel.js";
 
 export const listApprovePedingEvents = async (req, res) => {
   try {

@@ -6,6 +6,7 @@ import Ticket from '../models/ticketModel.js'
 import mongoose from "mongoose";
 import {v2 as cloudinary} from 'cloudinary';
 import streamifier from "streamifier";
+import attendeeNotficationModel from '../models/attendeeNotificationModel.js';
 
 
 export const updateProfileImage = async (req, res) => {
@@ -199,7 +200,7 @@ export const eventList =async (req, res) => {
         
         const events = await eventModel.find({ 
                 startDate: { $gt: currentDate } ,
-                status:"Approved", // Start date greater than current date
+                status:"approved", // Start date greater than current date
             })
             .sort({ startDate: 1 }) // Sort by start date ascending (soonest first)
             .limit(20) // Get top 20 events
@@ -283,3 +284,54 @@ export const search=async (req,res)=>{
         return res.status(500).json({ error: "Internal Server Error" });
       }
 }
+export const attendeeNotifications = async (req, res) => {
+  try {
+     const notifications = await attendeeNotficationModel
+       .find() // Filter notifications where 'to' is 'Admin'
+       .sort({ createdAt: -1 }) // Sort by latest
+       .lean();
+     const formattedNotifications = notifications.map((notification) => ({
+       id: notification._id,
+       from: notification.from?.name || "Unknown",
+       fromType: notification.fromType,
+       subject: notification.subject,
+       message: notification.message,
+       profileImage:"",
+       time: "2 hours ago", // You can enhance this by calculating the exact time using a date library
+     }));
+     res.status(200).json(formattedNotifications);
+   } catch (err) {
+     console.error(err);
+     res.status(500).json({ error: "Server error" });
+   }
+ };
+
+ export const attendeeNotification = async (req, res) => {
+     try {
+        const { notificationId} = req.params;
+        if (!notificationId) {
+          return res.status(400).json({ error: "Notification ID is required" });
+        }
+        const notification = await attendeeNotficationModel
+          .findById(notificationId)
+          .lean();
+        if (!notification) {
+          return res.status(404).json({ error: "Notification not found" });
+        }
+    
+        const formattedNotification = {
+          id: notification._id,
+          from: notification.from?.name || "Unknown",
+          fromType: notification.fromType,
+          subject: notification.subject,
+          message: notification.message,
+          profileImage: notification.from?.profileImage || " ",
+          time: "2 hours ago", 
+        };
+    
+        res.status(200).json(formattedNotification);
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+      }
+ }

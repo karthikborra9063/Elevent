@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, Image, Badge, Container, Row, Col } from 'react-bootstrap';
 import { AiOutlineBell, AiOutlineMail } from 'react-icons/ai';
@@ -8,45 +8,30 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
 const NotificationList = () => {
+  const [notifications,setNotifications] =useState([]);
   const navigate = useNavigate();
-  const apiBaseUrl = "http://localhost:8000";
-
-  const notifications = [
-    {
-      id: 1,
-      from: "John Doe",
-      fromType: "Attendee",
-      subject: "Event Inquiry",
-      message: "Can you provide more details about the event?",
-      profileImage: "/images/sampleProfile.webp",
-      time: "2 hours ago",
-    },
-    {
-      id: 2,
-      from: "Admin",
-      fromType: "Admin",
-      subject: "Policy Update",
-      message: "Please review the updated terms and conditions.",
-      profileImage: "/images/sampleProfile.webp",
-      time: "1 day ago",
-    },
-    {
-      id: 3,
-      from: "Event Team",
-      fromType: "Elevent",
-      subject: "Event Setup",
-      message: "Your event setup is complete.",
-      profileImage: "/images/sampleProfile.webp",
-      time: "3 days ago",
-    },
-  ];
 
   const [activeNotification, setActiveNotification] = useState(null);
-
-  const handleCardClick = () => {
-    navigate(`temp`);
+  const handleCardClick = (id) => {
+    navigate(`/organizer/notification/${id}`);
   };
-
+  const fetchNotifications = async() =>
+  {
+    try{
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}/api/organizer/notifications`,{
+        withCredentials:true,
+      });
+      console.log(response);
+      if(response.status === 200){
+        setNotifications(response.data);
+      }
+    }catch(err){
+      console.log(err);
+    }
+  }
+  useEffect(()=>{
+    fetchNotifications();
+  },[])
   return (
     <div 
       style={{
@@ -75,7 +60,7 @@ const NotificationList = () => {
         </h2>
 
         <Row className="gx-0"> {/* Ensuring no extra horizontal spacing */}
-          {notifications.map((notification) => (
+          {Array.isArray(notifications)&&notifications.map((notification) => (
             <Col xs={12} key={notification.id} className="mb-3">
               <Card
                 className={`shadow-sm border-0 rounded-3 ${
@@ -89,7 +74,7 @@ const NotificationList = () => {
                   transition: 'transform 0.2s ease',
                   width: '100%', // Ensure card takes full width and prevents scrolling
                 }}
-                onClick={() => handleCardClick()}
+                onClick={() => handleCardClick(notification.id)}
                 onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.02)')}
                 onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
               >

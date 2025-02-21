@@ -11,6 +11,22 @@ const EventDetails = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isRegistered, setIsRegistered] = useState(false);
+    const getFormattedDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = date.getDate();
+        const suffix = (day) => {
+          if (day > 3 && day < 21) return 'th';
+          switch (day % 10) {
+            case 1: return 'st';
+            case 2: return 'nd';
+            case 3: return 'rd';
+            default: return 'th';
+          }
+        };
+        const month = date.toLocaleString('en-GB', { month: 'long' });
+        const year = date.getFullYear();
+        return `${day}${suffix(day)} ${month} ${year}`;
+      };
 
     useEffect(() => {
         const fetchEvent = async () => {
@@ -59,7 +75,10 @@ const EventDetails = () => {
                             <Card.Body>
                                 <h4 className="text-info mb-4">Event Details</h4>
                                 <ListGroup variant="flush" className="bg-dark">
-                                    <ListGroup.Item className="bg-dark text-light border-0"><FaCalendarAlt className="me-2 text-primary" /><strong>Dates:</strong> {event.startDate} - {event.endDate}</ListGroup.Item>
+                                <ListGroup.Item className="bg-dark text-light border-0">
+                                    <FaCalendarAlt className="me-2 text-primary" />
+                                    <strong>Dates:</strong> {getFormattedDate(event.startDate)} - {getFormattedDate(event.endDate)}
+                                </ListGroup.Item>
                                     <ListGroup.Item className="bg-dark text-light border-0"><FaMapMarkerAlt className="me-2 text-warning" /><strong>Venue:</strong> {event.venue}</ListGroup.Item>
                                     <ListGroup.Item className="bg-dark text-light border-0"><FaUsers className="me-2 text-info" /><strong>Max Attendees:</strong> {event.maxAttendees}</ListGroup.Item>
                                     <ListGroup.Item className="bg-dark text-light border-0"><FaUsers className="me-2 text-info" /><strong>Current Attendees:</strong> {event.currentAttendees}</ListGroup.Item>

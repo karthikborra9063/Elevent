@@ -7,6 +7,7 @@ import adminNotification from "../models/adminNotificationModel.js"
 import streamifier from "streamifier";
 
 import {v2 as cloudinary} from 'cloudinary';
+import organizerNotificationModel from "../models/organizerNotificationModel.js";
 
 export const updateOrganizer = async (req, res) => {
     try {
@@ -352,17 +353,25 @@ export const getName = async (req, res) => {
     }
 }
 export const getNotifications = async (req, res) => {
-    try{
-        userId = req.user._id;
-        if(!userId){
-            return res.status(404).json({notFound:"User not found"});
-        }
-        const notifications = await organizerNotification.findById({to:userId}).populate('from');
-        return res.status(200).json(notifications);
-    }catch(err){
-        console.log(`Error has occured at organizer get notifications`);
-        return res.status(500).json({error:`Internal error has occured -${err}`})
-    }
+    try {
+        const notifications = await organizerNotificationModel
+          .find() // Filter notifications where 'to' is 'Admin'
+          .sort({ createdAt: -1 }) // Sort by latest
+          .lean();
+        const formattedNotifications = notifications.map((notification) => ({
+          id: notification._id,
+          from: notification.from?.name || "Unknown",
+          fromType: notification.fromType,
+          subject: notification.subject,
+          message: notification.message,
+          profileImage:"",
+          time: "2 hours ago", // You can enhance this by calculating the exact time using a date library
+        }));
+        res.status(200).json(formattedNotifications);
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Server error" });
+      }
 }
 export const writeMessageToAdmin = async (req, res) => {
     try{
@@ -384,5 +393,34 @@ export const writeMessageToAdmin = async (req, res) => {
     }catch(err){
         console.log(`Error occured at writeMessageToAdmin - ${err}`);
         return res.status(500).json({err:"Internal error occured"});
+    }
+}
+export const getNotification = async(req, res) => {
+  try {
+      const { notificationId} = req.params;
+      if (!notificationId) {
+        return res.status(400).json({ error: "Notification ID is required" });
+      }
+      const notification = await organizerNotificationModel
+        .findById(notificationId)
+        .lean();
+      if (!notification) {
+        return res.status(404).json({ error: "Notification not found" });
+      }
+  
+      const formattedNotification = {
+        id: notification._id,
+        from: notification.from?.name || "Unknown",
+        fromType: notification.fromType,
+        subject: notification.subject,
+        message: notification.message,
+        profileImage: notification.from?.profileImage || " ",
+        time: "2 hours ago", 
+      };
+  
+      res.status(200).json(formattedNotification);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Server error" });
     }
 }
