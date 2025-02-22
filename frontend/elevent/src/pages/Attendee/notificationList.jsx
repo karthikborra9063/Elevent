@@ -13,7 +13,7 @@ const NotificationList = () => {
 
   const [activeNotification, setActiveNotification] = useState(null);
   const handleCardClick = (id) => {
-    navigate(`/admin/notification/${id}`);
+    navigate(`/attendee/notification/${id}`);
   };
   const fetchNotifications = async() =>
   {

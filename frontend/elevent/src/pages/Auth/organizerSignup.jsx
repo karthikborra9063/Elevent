@@ -2,8 +2,12 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Alert, Row, Col } from "react-bootstrap";
 import axios from "axios";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
 
 const OrganizerSignupForm = () => {
+  const Navigator = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -69,7 +73,10 @@ const OrganizerSignupForm = () => {
                 },
                 withCredentials: true, // Send cookies with request
             }); // Replace with your backend endpoint
-      setSuccessMessage("Signup successful!");
+      toast.success("Login successful!");
+      setSuccessMessage("Login successful!");
+      Navigator("/");
+      window.location.reload();
       setErrorMessage("");
     } catch (error) {
       setSuccessMessage("");

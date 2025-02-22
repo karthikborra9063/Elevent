@@ -3,7 +3,13 @@ import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { FiBell, FiSend } from "react-icons/fi";
 import axios from "axios";
 
+import { useNavigate } from "react-router-dom";
+
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const AdminSendUpdatesPage = () => {
+  const Navigator = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     message: "",
@@ -22,16 +28,18 @@ const AdminSendUpdatesPage = () => {
     setError(null);
 
     try {
-      const payload = {
-        from: "Admin",
-        fromType: "Admin",
-        title: formData.title,
-        message: formData.message,
-      };
 
-      await axios.post("/api/attendee-notifications", payload);
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/admin/update-to-attendee`, formData,{
+        withCredentials:true
+      });
       setSubmitted(true);
-
+      if(response.status==200){
+              toast.success("update sent to attendees successfully");
+              Navigator("/");
+        }
+        else{
+            toast.success(response.message);
+        }
       setTimeout(() => {
         setSubmitted(false);
         setFormData({ title: "", message: "" });

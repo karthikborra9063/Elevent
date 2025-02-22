@@ -19,7 +19,7 @@ function attendeePathRoute(){
             <Route path="events/:id" element={<EventDetails/>}/>
             <Route path="events/register/ticket" element={<AttendeeTicket />} />
             <Route path='notifications' element={<NotificationList/>}/>
-            <Route path='notifications/:notificationId' element={<NotificationDetails/>}/>
+            <Route path='notification/:notificationId' element={<NotificationDetails/>}/>
           </Routes>
       );
 }

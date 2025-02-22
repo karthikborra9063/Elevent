@@ -17,6 +17,6 @@ router.put('/profileImageUpdate', protectRoute, upload.single('profileImg'), upd
 router.put('/profileUpdate', protectRoute, updateAttendee);
 router.get('/search', protectRoute, search);
 router.get('/notifications',protectRoute,attendeeNotifications);
-router.get('/notifications/:notificationId', protectRoute,attendeeNotification);
+router.get('/notification/:notificationId', protectRoute,attendeeNotification);
 
 export default router;

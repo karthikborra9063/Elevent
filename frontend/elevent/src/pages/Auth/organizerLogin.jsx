@@ -3,10 +3,12 @@ import React, { useState } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
-// import dotenv from 'dotenv';
-// dotenv.config();
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
 
 const OrganizerLoginForm = () => {
+  const Navigator = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -53,7 +55,10 @@ const OrganizerLoginForm = () => {
         );
 
         // Handle successful login
+        toast.success("Login successful!");
         setSuccessMessage("Login successful!");
+        Navigator("/");
+        window.location.reload();
         setErrorMessage(""); // Clear any previous error messages
         console.log(response.data); // Log the response for debugging
     } catch (error) {

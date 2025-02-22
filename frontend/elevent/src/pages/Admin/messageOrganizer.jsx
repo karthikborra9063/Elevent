@@ -2,8 +2,13 @@ import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { FiMessageCircle, FiSend } from "react-icons/fi";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AdminMessagePage = () => {
+  const Navigator = useNavigate();
   const [formData, setFormData] = useState({
     username:"",
     subject: "",
@@ -23,16 +28,8 @@ const AdminMessagePage = () => {
     setError(null);
 
     try {
-      const organizerId = "64abcd1234567890efghijkl"; 
-      const payload = {
-        to: organizerId,
-        from: "Admin", 
-        fromType: "Admin",
-        subject: formData.subject,
-        message: formData.message,
-      };
 
-      const response = await axios.post("/api/admin/message-organizer", {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/admin/message-organizer`, {
         username:formData.username,
         subject: formData.subject,
         message: formData.message
@@ -41,7 +38,11 @@ const AdminMessagePage = () => {
       });
       setSubmitted(true);
       if(response.status==200){
-        conole.log("Successfully submitted message");
+        toast.success("message sent to admin successfully");
+        Navigator("/");
+      }
+      else{
+        toast.success(response.message);
       }
       setTimeout(() => {
         setSubmitted(false);

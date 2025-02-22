@@ -8,6 +8,8 @@ import streamifier from "streamifier";
 
 import {v2 as cloudinary} from 'cloudinary';
 import organizerNotificationModel from "../models/organizerNotificationModel.js";
+import attendeeNotificationModel from "../models/attendeeNotificationModel.js";
+import attendeeModel from "../models/attendeeModel.js";
 
 export const updateOrganizer = async (req, res) => {
     try {
@@ -373,7 +375,7 @@ export const getNotifications = async (req, res) => {
         res.status(500).json({ error: "Server error" });
       }
 }
-export const writeMessageToAdmin = async (req, res) => {
+export const MessageAdmin = async (req, res) => {
     try{
         const {subject,message} = req.body;
         const organizerId = req.user._id;
@@ -423,4 +425,31 @@ export const getNotification = async(req, res) => {
       console.error(err);
       res.status(500).json({ error: "Server error" });
     }
+}
+export const updateToAttendee = async (req,res)=>{
+  try {
+    const { title, message } = req.body;
+
+    // Find all attendees
+    const attendees = await attendeeModel.find({});
+    if (!attendees.length) {
+      return res.status(404).json({ notFound: "No attendees found" });
+    }
+
+    // Create notifications for all attendees
+    const notifications = attendees.map((attendee) => ({
+      to: attendee._id,
+      from: req.user._id,          // Assuming the sender is the logged-in admin
+      fromType: "Organizer",
+      subject: title,
+      message: message
+    }));
+
+    await attendeeNotificationModel.insertMany(notifications);
+
+    return res.status(200).json({ success: "Successfully sent the message to all attendees" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
 }

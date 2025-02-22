@@ -7,7 +7,8 @@ import adminNotificationModel from "../models/adminNotificationModel.js";
 import streamifier from "streamifier";
 import { cv2 as cloudinary } from "cloudinary";
 import mongoose from "mongoose";
-import organizerNotificationModel from "../models/organizerNotificationModel.js";
+import attendeeNotificationModel from "../models/attendeeNotificationModel.js";
+import attendeeModel from "../models/attendeeModel.js";
 
 export const listApprovePedingEvents = async (req, res) => {
   try {
@@ -45,21 +46,35 @@ export const listApprovedEvents = async (req, res) => {
   try {
     const adminId = req.user._id;
     const admin = await adminModel.findById(adminId);
+
     if (!admin) {
       return res
         .status(401)
         .json({ Unauthorized: `Unauthorized access to the admin page` });
     }
+
+    const currentDate = new Date();
+    
+    // Update status to completed for events whose endDate is less than currentDate
+    await eventModel.updateMany(
+      { endDate: { $lt: currentDate }, status: { $ne: "completed" } },
+      { $set: { status: "completed" } }
+    );
+
     const { search = "", page = 1, limit = 10 } = req.query;
+
     const query = {
       ...(search && { username: { $regex: search, $options: "i" } }),
       status: "approved",
     };
+
     const approvedEvents = await eventModel
       .find(query)
       .skip((page - 1) * limit)
       .limit(Number(limit));
+
     const totalMatches = await eventModel.countDocuments(query);
+
     return res.json({
       events: approvedEvents,
       total: totalMatches,
@@ -71,6 +86,7 @@ export const listApprovedEvents = async (req, res) => {
       .json({ error: "An error occurred while fetching events." });
   }
 };
+
 
 export const listCancledEvents = async (req, res) => {
   try {
@@ -116,6 +132,14 @@ export const listCompletedEvents = async (req, res) => {
         .json({ Unauthorized: `Unauthorized access to the admin page` });
     }
 
+    const currentDate = new Date();
+    
+    // Update status to completed for events whose endDate is less than currentDate
+    await eventModel.updateMany(
+      { endDate: { $lt: currentDate }, status: { $ne: "completed" } },
+      { $set: { status: "completed" } }
+    );
+
     const { search = "", page = 1, limit = 10 } = req.query;
 
     const query = {
@@ -141,6 +165,7 @@ export const listCompletedEvents = async (req, res) => {
       .json({ error: "An error occurred while fetching events." });
   }
 };
+
 
 export const listOrganizers = async (req, res) => {
   try {
@@ -397,6 +422,33 @@ export const MessageOrganizer = async (req, res) => {
     notify.save();
     return res.status(200).json({success:"Successfully sent the message to the admin"});
   }catch(err){
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+export const updateToAttendee = async (req, res) => {
+  try {
+    const { title, message } = req.body;
+
+    // Find all attendees
+    const attendees = await attendeeModel.find({});
+    if (!attendees.length) {
+      return res.status(404).json({ notFound: "No attendees found" });
+    }
+
+    // Create notifications for all attendees
+    const notifications = attendees.map((attendee) => ({
+      to: attendee._id,
+      from: req.user._id,          // Assuming the sender is the logged-in admin
+      fromType: "Admin",
+      subject: title,
+      message: message
+    }));
+
+    await attendeeNotificationModel.insertMany(notifications);
+
+    return res.status(200).json({ success: "Successfully sent the message to all attendees" });
+  } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }

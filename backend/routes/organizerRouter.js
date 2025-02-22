@@ -7,7 +7,7 @@ const upload = multer({ storage });
 
 import protectRoute from '../middleware/organizerProtectRoute.js';
 import updateRouter from './updateRouter.js';
-import {createEvent,eventList,getMe, updateOrganizer,getNotifications,getName, updateProfileImage,updateCoverImage,getEvent,updateEventBanner,getNotification} from '../controller/organizerController.js'
+import {createEvent,eventList,getMe, updateOrganizer,getNotifications,getName, updateProfileImage,updateCoverImage,getEvent,updateEventBanner,getNotification,MessageAdmin,updateToAttendee} from '../controller/organizerController.js'
 
 const router = express.Router();
 
@@ -22,5 +22,7 @@ router.put("/updateCoverImage", protectRoute,upload.single("coverImage"), update
 router.get('/notifications',protectRoute,getNotifications);
 router.get('/notification/:notificationId',protectRoute,getNotification)
 router.get('/getName',protectRoute,getName);
+router.post('/messageAdmin',protectRoute,MessageAdmin);
+router.post('/update-to-attendee',protectRoute,updateToAttendee);
 router.put('/event/update-event-banner',protectRoute,upload.single("banner"),updateEventBanner);
 export default router;

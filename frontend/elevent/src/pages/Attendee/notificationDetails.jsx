@@ -13,7 +13,7 @@ const NotificationDetails = () => {
   const {notificationId}=useParams();
 
   const handleBackNotifications = () => {
-    navigate('/admin/notifications');
+    navigate('/attendee/notifications');
   };
   const fetchNotification = async () => {
     console.log(`${import.meta.env.VITE_BACKEND_SERVER}`)

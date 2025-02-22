@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
 
 const AdminLoginForm = () => {
+  const Navigator = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -46,6 +50,9 @@ const AdminLoginForm = () => {
         withCredentials: true,
       });
       setSuccessMessage("Login successful!");
+      toast.success("Login successful!");
+      Navigator("/");
+      window.location.reload();
       setErrorMessage("");
     } catch (error) {
       setSuccessMessage("");

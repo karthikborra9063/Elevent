@@ -2,8 +2,13 @@ import React, { useState } from "react";
 import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { FiMessageCircle, FiSend } from "react-icons/fi";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const OrganizerQueryPage = () => {
+  const Navigator = useNavigate();
   const [formData, setFormData] = useState({
     subject: "",
     message: "",
@@ -22,22 +27,20 @@ const OrganizerQueryPage = () => {
     setError(null);
 
     try {
-      const loggedInUserId = "64abcd1234567890efghijkl"; // Sample Organizer ID (replace with actual data)
-      const payload = {
-        to: "Admin", // Notify the Admin
-        from: loggedInUserId,
-        fromType: "Organizer",
-        subject: formData.subject,
-        message: formData.message,
-      };
 
-      await axios.post("/api/admin-notifications", payload);
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/organizer/messageAdmin`, formData,{
+        withCredentials:true
+      });
       setSubmitted(true);
 
       setTimeout(() => {
         setSubmitted(false);
         setFormData({ subject: "", message: "" });
       }, 3000); // Reset form after 3 seconds
+      if(response.status==200){
+        toast.success("message sent to admin successfully");
+        Navigator("/");
+      }
     } catch (err) {
       setError("Failed to submit your message. Please try again later.");
     }

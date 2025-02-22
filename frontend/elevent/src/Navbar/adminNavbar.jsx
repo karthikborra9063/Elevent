@@ -175,7 +175,7 @@ function AdminNavbar() {
               </NavDropdown.Item>
               <NavDropdown.Item
                 as={Link}
-                to="/admin/updateToAttendees"
+                to="/admin/update-to-attendees"
                 className="d-flex align-items-center gap-2"
               >
                 <FaInfoCircle />

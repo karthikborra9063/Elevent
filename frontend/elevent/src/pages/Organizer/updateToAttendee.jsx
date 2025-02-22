@@ -3,7 +3,13 @@ import { Container, Row, Col, Form, Button, Card } from "react-bootstrap";
 import { FiBell, FiSend } from "react-icons/fi";
 import axios from "axios";
 
+import { useNavigate } from "react-router-dom";
+
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const OrganizerSendUpdatesPage = () => {
+  const Navigator = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     message: "",
@@ -22,21 +28,21 @@ const OrganizerSendUpdatesPage = () => {
     setError(null);
 
     try {
-      const organizerId = "64abcd1234567890efghijkl"; // Sample Organizer ID (replace with actual data)
-      const payload = {
-        from: organizerId,
-        fromType: "Organizer",
-        title: formData.title,
-        message: formData.message,
-      };
 
-      await axios.post("/api/attendee-notifications", payload);
+      await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/organizer/update-to-attendee`, formData,{
+        withCredentials:true
+      });
       setSubmitted(true);
 
       setTimeout(() => {
         setSubmitted(false);
         setFormData({ title: "", message: "" });
       }, 3000); // Reset form after 3 seconds
+      if(response.status==200){
+              toast("update sent to attendees successfully");
+              Navigator("/");
+              window.location.reload();
+        }
     } catch (err) {
       setError("Failed to send your update. Please try again later.");
     }

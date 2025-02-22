@@ -39,6 +39,7 @@ const LoginForm = () => {
       setErrorMessage("");
       toast.success("Login successful!");
       Navigator("/");
+      window.location.reload();
     } catch (error) {
       setSuccessMessage("");
       setErrorMessage(

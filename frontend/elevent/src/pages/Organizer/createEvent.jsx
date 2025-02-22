@@ -6,7 +6,11 @@ import { Form, Button, Container, Row, Col } from "react-bootstrap";
 
 import { useNavigate } from "react-router-dom";
 
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import axios from "axios";
+
 
 const CreateEventForm = () => {
 
@@ -59,8 +63,13 @@ const CreateEventForm = () => {
         const response=await axios.post(`${apiBaseUrl}/api/organizer/create-event`,formData, {
         withCredentials: true,
       });
+      if(response.status==200){
+        toast.success(`${formData.eventname} event created successfully`);
+        navigate("/");
+        window.location.reload();
+      }
     }catch(err){
-        console.error(err);
+        toast.error(err);
     }
   };
 

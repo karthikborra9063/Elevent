@@ -2,8 +2,12 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import axios from "axios";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
 
 const SignupForm = () => {
+  const Navigator = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -46,7 +50,10 @@ const SignupForm = () => {
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/auth/attendee/signup`, formData,{
         withCredentials:true,
       }); 
-      setSuccessMessage("signup successful!");
+       toast.success("Signup successful!");
+        setSuccessMessage("Signup successful!");
+        Navigator("/");
+        window.location.reload();
       setErrorMessage("");
     } catch (error) {
       setSuccessMessage("");

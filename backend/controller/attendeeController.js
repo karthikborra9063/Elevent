@@ -286,52 +286,62 @@ export const search=async (req,res)=>{
 }
 export const attendeeNotifications = async (req, res) => {
   try {
-     const notifications = await attendeeNotficationModel
-       .find() // Filter notifications where 'to' is 'Admin'
-       .sort({ createdAt: -1 }) // Sort by latest
-       .lean();
-     const formattedNotifications = notifications.map((notification) => ({
-       id: notification._id,
-       from: notification.from?.name || "Unknown",
-       fromType: notification.fromType,
-       subject: notification.subject,
-       message: notification.message,
-       profileImage:"",
-       time: "2 hours ago", // You can enhance this by calculating the exact time using a date library
-     }));
-     res.status(200).json(formattedNotifications);
-   } catch (err) {
-     console.error(err);
-     res.status(500).json({ error: "Server error" });
-   }
+    const userId = req.user._id;
+  
+    const notifications = await attendeeNotficationModel
+      .find({ to: userId }) // Filter notifications where 'to' is the logged-in user's ID
+      .sort({ createdAt: -1 }) // Sort by latest
+      .lean();
+  
+    const formattedNotifications = notifications.map((notification) => ({
+      id: notification._id,
+      from: notification.from?.name || "Unknown",
+      fromType: notification.fromType,
+      subject: notification.subject,
+      message: notification.message,
+      profileImage: "",
+      time: "2 hours ago", // You can enhance this by calculating the exact time using a date library
+    }));
+  
+    res.status(200).json(formattedNotifications);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+  
  };
 
  export const attendeeNotification = async (req, res) => {
-     try {
-        const { notificationId} = req.params;
-        if (!notificationId) {
-          return res.status(400).json({ error: "Notification ID is required" });
-        }
-        const notification = await attendeeNotficationModel
-          .findById(notificationId)
-          .lean();
-        if (!notification) {
-          return res.status(404).json({ error: "Notification not found" });
-        }
-    
-        const formattedNotification = {
-          id: notification._id,
-          from: notification.from?.name || "Unknown",
-          fromType: notification.fromType,
-          subject: notification.subject,
-          message: notification.message,
-          profileImage: notification.from?.profileImage || " ",
-          time: "2 hours ago", 
-        };
-    
-        res.status(200).json(formattedNotification);
-      } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Server error" });
-      }
+  try {
+    const { notificationId } = req.params;
+    const userId = req.user._id;
+  
+    if (!notificationId) {
+      return res.status(400).json({ error: "Notification ID is required" });
+    }
+  
+    const notification = await  attendeeNotficationModel
+      .findOne({ _id: notificationId, to: userId }) // Check if 'to' matches the logged-in user's ID
+      .lean();
+  
+    if (!notification) {
+      return res.status(404).json({ error: "Notification not found" });
+    }
+  
+    const formattedNotification = {
+      id: notification._id,
+      from: notification.from?.name || "Unknown",
+      fromType: notification.fromType,
+      subject: notification.subject,
+      message: notification.message,
+      profileImage: notification.from?.profileImage || " ",
+      time: "2 hours ago", 
+    };
+  
+    res.status(200).json(formattedNotification);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+  
  }

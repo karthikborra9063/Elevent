@@ -2,8 +2,12 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Alert } from "react-bootstrap";
 import axios from "axios";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from "react-router-dom";
 
 const AdminSignupForm = () => {
+  const Navigator = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -52,8 +56,10 @@ const AdminSignupForm = () => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_SERVER}/api/auth/admin/signup`, formData); // Replace with your backend endpoint
       if(response.status==200){
-        console.log("signup successful");
+        toast.success("Signup successful!");
         setSuccessMessage("Signup successful!");
+        Navigator("/");
+        window.location.reload();
       }
       setErrorMessage("");
     } catch (error) {
