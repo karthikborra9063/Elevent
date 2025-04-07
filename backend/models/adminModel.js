@@ -14,7 +14,7 @@ const adminSchema = new mongoose.Schema({
     status:{ 
         type:String,
         enum:['approved', 'pending','rejected'],
-        default:'pending'
+        default:'pending',
     },
     approvedBy:{ 
         type:mongoose.Schema.Types.ObjectId,
