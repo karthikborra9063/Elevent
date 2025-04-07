@@ -80,5 +80,4 @@ const EventList = () => {
         </div>
     );
 };
-
 export default EventList;

@@ -13,6 +13,7 @@ const EventList = () => {
 
     const apiBaseUrl = "http://localhost:8000";
     
+    
     const fetchEvents = useCallback(async () => {
         try {
             const response = await axios.get(`${apiBaseUrl}/api/admin/canceled-events`, {

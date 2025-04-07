@@ -9,7 +9,6 @@ const EventRegister = () => {
         // Redirect to a payment gateway (example: Razorpay, PayPal, Stripe, etc.)
         window.location.href = "https://www.paypal.com"; // Replace with actual payment URL
     };
-
     return (
         <div style={{ backgroundColor: "#121212", color: "#F8FAFC", minHeight: "100vh", paddingTop: "20px" }}>
             <Container>

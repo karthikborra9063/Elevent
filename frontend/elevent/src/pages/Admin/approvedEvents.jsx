@@ -19,7 +19,6 @@ const EventList = () => {
                 params: { page, limit: 10 },
                 withCredentials: true,
             });
-            
             setEvents((prevEvents) => {
                 const eventSet = new Set(prevEvents.map(e => e._id));
                 const newEvents = response.data.events.filter(e => !eventSet.has(e._id));

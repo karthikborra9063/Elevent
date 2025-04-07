@@ -19,7 +19,6 @@ import {
 } from "react-icons/fa";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-
 const AdminEventDetails = () => {
   const [event, setEvent] = useState(null);
   const apiBaseUrl = "http://localhost:8000";

@@ -6,8 +6,6 @@ import axios from "axios";
 import { isAuthenticated } from "../utils/auth.js";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-
 const EventDetails = () => {
     const { eventId } = useParams();
     const navigate = useNavigate();

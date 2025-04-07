@@ -42,6 +42,7 @@ function AdminNavbar() {
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery) return;
+    
 
     try {
       console.log(searchQuery);

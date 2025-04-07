@@ -18,7 +18,6 @@ const LoginForm = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
   const validateForm = () => {
     let errors = {};
     if (!formData.username) errors.username = "Username is required.";

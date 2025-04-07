@@ -105,7 +105,6 @@ const Ticket = () => {
                     filter: "brightness(0.8)"
                 }}
             />
-
             <Row className="g-3 p-3 w-100">
                 <Col md={7} className="d-flex flex-column justify-content-center">
                     <h3 className="mb-3" style={{ fontWeight: "bold", textAlign: "left" }}>{event?.eventname}</h3>

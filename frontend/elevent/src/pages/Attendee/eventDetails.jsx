@@ -42,7 +42,6 @@ const EventDetails = () => {
         };
         fetchEvent();
     }, [id]);
-
     const handleRegister = async () => {
         try {
             const response = await axios.post(`/api/attendee/events/${id}/register`);

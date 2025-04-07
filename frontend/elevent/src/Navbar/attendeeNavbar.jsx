@@ -24,6 +24,7 @@ function BasicExample() {
     fontWeight: "500",
     transition: "background-color 0.3s, color 0.3s",
   };
+  
 
   const handleHover = (e, isHovering) => {
     e.target.style.backgroundColor = isHovering ? "#444" : "#1e1e1e";

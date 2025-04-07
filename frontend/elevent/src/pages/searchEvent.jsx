@@ -13,7 +13,6 @@ const SearchEvent = () => {
         }
     }, [location.state?.searchEvents]);
 
-
     const handleCardClick = (eventId) => {
         navigate(`/attendee/events/${eventId}`);
     };

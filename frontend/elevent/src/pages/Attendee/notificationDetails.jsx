@@ -11,7 +11,6 @@ const NotificationDetails = () => {
   const navigate = useNavigate();
   const [notification,setNotification] = useState({});
   const {notificationId}=useParams();
-
   const handleBackNotifications = () => {
     navigate('/attendee/notifications');
   };

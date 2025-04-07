@@ -8,6 +8,7 @@ const ExampleCarouselImage = () => {
         className="d-block w-100"
         src="images/banner.webp"
         alt="Banner image"
+        
       />
       <Carousel.Caption>
         <h3>Banner </h3>

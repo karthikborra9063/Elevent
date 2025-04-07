@@ -18,7 +18,6 @@ const ArtistForm = () => {
       twitter: "",
     },
   });
-
   const [previewImage, setPreviewImage] = useState(null);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);

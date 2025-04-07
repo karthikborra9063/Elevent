@@ -62,7 +62,6 @@ const SignupForm = () => {
       );
     }
   };
-
   return (
     <Container
       className="mt-5 d-flex justify-content-center"

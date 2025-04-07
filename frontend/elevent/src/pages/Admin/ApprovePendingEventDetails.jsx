@@ -23,7 +23,6 @@ import {
   FaConciergeBell,
 } from "react-icons/fa";
 import { useParams, useNavigate } from "react-router-dom";
-
 const AdminEventDetails = () => {
   const [event, setEvent] = useState(null);
   const apiBaseUrl = "http://localhost:8000";
