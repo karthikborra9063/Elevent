@@ -15,7 +15,7 @@ import OrganizersList from '../pages/Admin/organizersList.jsx';
 import NotificationList from '../pages/Admin/notificationList.jsx';
 import NotificationDetails from '../pages/Admin/notificationDetails.jsx';
 import HomePage from '../pages/homePage.jsx';
-import ProtectedRoute from '../components/ProtectedRoute';
+import ProtectedRoute from '../components/protectedRoute';
 import SearchEvent from '../pages/Admin/searchEvents.jsx';
 
 function AdminPathRouter() {

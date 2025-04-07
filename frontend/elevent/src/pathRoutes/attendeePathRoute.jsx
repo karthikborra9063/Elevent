@@ -4,7 +4,7 @@ import EventDetails from '../pages/Attendee/eventDetails.jsx';
 import AttendeeTicket from '../pages/Attendee/ticket.jsx';
 import SearchEvents from '../pages/Attendee/searchEvents.jsx';
 import MyEventList from '../pages/Attendee/myEventList.jsx'
-import AttendeeProfile from '../pages/profile/attendeeProfile.jsx';
+import AttendeeProfile from '../pages/Profile/attendeeProfile.jsx';
 import NotificationList from '../pages/Attendee/notificationList.jsx';
 import NotificationDetails from '../pages/Attendee/notificationDetails.jsx';
 
