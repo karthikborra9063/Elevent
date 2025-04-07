@@ -7,7 +7,7 @@ const eventRegistrationSchema = new mongoose.Schema({
     },
     attendee:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Attendee'
+        ref: 'Attendee',
     },
 }, { timestamps: true });
 

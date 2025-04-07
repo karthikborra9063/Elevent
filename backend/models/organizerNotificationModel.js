@@ -19,7 +19,7 @@ fromType:{
 subject:{
     type:String,
     required: true,
-    maxLenght:50
+    maxLenght:50,
 },
 message:{
     type:String,

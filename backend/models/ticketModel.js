@@ -18,7 +18,7 @@ const ticketSchema = new mongoose.Schema({
     },
     qrCodeValue: {
         type: String,
-        required: true,
+        required: true
     },
     attendeeId: {
         type: mongoose.Schema.Types.ObjectId,

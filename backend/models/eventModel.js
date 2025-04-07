@@ -103,7 +103,8 @@ const eventSchema = new mongoose.Schema({
         type:String,
     },
     services:{
-        type:String}
+        type:String,
+    }
     ,
     sponsers:{
         type:String,

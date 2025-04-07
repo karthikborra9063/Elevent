@@ -14,7 +14,7 @@ const adminNotficationSchema = new mongoose.Schema({
     subject:{
         type:String,
         required:true,
-        maxLength:50
+        maxLength:50,
     },
     message:{
         type:String,

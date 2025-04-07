@@ -17,7 +17,7 @@ const organizerSchema =new mongoose.Schema({
     email:{
         type: String,
         required:true,
-        unique: true
+        unique: true,
     },
     address: {
         street: { type: String, required: true }, 

@@ -14,7 +14,7 @@ from:{
 fromType:{
     type: String,
     required: true,
-    enum: ['Organizer', 'Admin', 'Elevent']
+    enum: ['Organizer', 'Admin', 'Elevent'],
 },
 subject:{
     type:String,
