@@ -68,7 +68,7 @@ export const cancelEvent =async (req, res) => {
     const {reason} = req.body;
     const cancelSubject="";
     const cancelMessage = "";
-    const orga = await orgaModel.findById(organizerId).select('-password');
+    const orga = await organizerModel.findById(organizerId).select('-password');
     if(!orga){
         return res.status(404).json({notFound:`Organizer not found`})
     }

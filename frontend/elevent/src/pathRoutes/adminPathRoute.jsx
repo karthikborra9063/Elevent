@@ -16,6 +16,7 @@ import NotificationList from '../pages/Admin/notificationList.jsx';
 import NotificationDetails from '../pages/Admin/notificationDetails.jsx';
 import HomePage from '../pages/homePage.jsx';
 import ProtectedRoute from '../components/ProtectedRoute';
+import SearchEvent from '../pages/Admin/searchEvents.jsx';
 
 function AdminPathRouter() {
   return (
@@ -38,6 +39,7 @@ function AdminPathRouter() {
       <Route path='organizerProfile/:organizerId' element={<ProtectedRoute element={<OrganizerProfile />} />} />
       <Route path="list-organizers" element={<ProtectedRoute element={<OrganizersList />} />} />
       <Route path="notifications" element={<ProtectedRoute element={<NotificationList />} />} />
+      <Route path="/search-events" element={<ProtectedRoute element={<SearchEvent />} />} />
       <Route path="notification/:notificationId" element={<ProtectedRoute element={<NotificationDetails />} />} />
     </Routes>
   );

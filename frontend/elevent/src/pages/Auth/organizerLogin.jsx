@@ -67,7 +67,7 @@ const OrganizerLoginForm = () => {
         setErrorMessage(
             error.response?.data?.message || error.message || "An unexpected error occurred."
         );
-        console.error("Error during login:", error); // Log error for debugging
+        console.log("Error during login:", error); // Log error for debugging
     } finally {
         setIsLoading(false); // Stop loading spinner or indicator
     }

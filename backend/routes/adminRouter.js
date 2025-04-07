@@ -1,6 +1,6 @@
 import express from 'express';
 
-import {listApprovePedingEvents,listApprovedEvents,listCancledEvents,listCompletedEvents,listOrganizers,deleteOrganizer, writeMessageToOrganizer,addArtist,getName,getMe, getEvent,getOrganizer,getNotifications,getNotification,MessageOrganizer,updateToAttendee} from '../controller/adminController.js'
+import {listApprovePedingEvents,listApprovedEvents,listCancledEvents,listCompletedEvents,listOrganizers,deleteOrganizer, writeMessageToOrganizer,addArtist,getName,getMe, getEvent,getOrganizer,getNotifications,getNotification,MessageOrganizer,updateToAttendee, search} from '../controller/adminController.js'
 import { approveEvent,cancelEvent,approveAdmin,rejectAdmin}  from '../controller/superAdminController.js';
 
 import adminProtectRoute from '../middleware/adminProtectRoute.js';
@@ -28,4 +28,5 @@ router.post('/:eventId/ApproveEvent',adminProtectRoute,approveEvent);
 router.post('/:eventId/CancelEvent',adminProtectRoute, cancelEvent);
 router.put('/:adminId/approveAdmin',superadminProtectRoute,approveAdmin);
 router.put('/:adminId/rejectAdmin', superadminProtectRoute,rejectAdmin);
+router.get('/search',adminProtectRoute,search);
 export default router;

@@ -24,6 +24,7 @@ function AdminNavbar() {
   const navigate = useNavigate();
   const [adminName, setAdminName] = useState("Admin");
   const [showProfile, setShowProfile] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const buttonStyle = {
     backgroundColor: "#1e1e1e",
     border: "1px solid #444",
@@ -36,6 +37,22 @@ function AdminNavbar() {
   const handleHover = (e, isHovering) => {
     e.target.style.backgroundColor = isHovering ? "#444" : "#1e1e1e";
     e.target.style.color = isHovering ? "#FFF" : "#F8FAFC";
+  };
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery) return;
+
+    try {
+      console.log(searchQuery);
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}/api/admin/search`, {
+        params: { query: searchQuery },
+        withCredentials: true,
+      });
+      navigate("admin/search-events",{ state: { searchEvents: response.data } }); // Redirect to the home page to display results
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
   };
 
   const adminLogOut = async () => {
@@ -74,15 +91,19 @@ function AdminNavbar() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Form className="d-flex me-3">
-            <Form.Control
-              type="search"
-              placeholder="Search"
-              className="me-2 bg-dark text-light"
-              aria-label="Search"
-            />
-            <Button variant="outline-light">Search</Button>
-          </Form>
+        <Form className="d-flex me-3" onSubmit={handleSearch}>
+          <Form.Control
+            type="search"
+            placeholder="Search by event, category, or artist"
+            className="me-2 bg-dark text-light"
+            aria-label="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Button variant="outline-light" type="submit">
+            Search
+          </Button>
+        </Form>
           <Nav className="me-auto">
             <NavDropdown
               title="Location"

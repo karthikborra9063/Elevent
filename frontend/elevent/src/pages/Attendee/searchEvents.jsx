@@ -18,8 +18,8 @@ const SearchEvent = () => {
         navigate(`/attendee/events/${eventId}`);
     };
 
-     const approvedEvents = events;//.filter(event => event.status === "approved");
-
+     const approvedEvents = events.filter(event => event.status === "approved");
+    console.log(approvedEvents);
 
     return (
         <div style={{ backgroundColor: "#121212", color: "#F8FAFC", minHeight: "100vh", paddingTop: "20px" }}>
@@ -47,7 +47,7 @@ const SearchEvent = () => {
                                         <Card.Text className="mb-3">
                                             <div><strong>Category:</strong> {event.category || "N/A"}</div>
                                             <div><strong>Venue:</strong> {event.venue || "TBA"}</div>
-                                            <div><strong>Dates:</strong> {event.startDate} - {event.endDate}</div>
+                                            <div><strong>Dates:</strong> {new Date(event.startDate).toLocaleDateString('en-GB')} - {new Date(event.endDate).toLocaleDateString('en-GB')}</div>
                                         </Card.Text>
                                     </Card.Body>
                                 </Card>
@@ -55,7 +55,7 @@ const SearchEvent = () => {
                         ))
                     ) : (
                         <p className="text-center">
-                            {events.length === 0 ? "Loading events..." : "No approved events found."}
+                            {events.length === 0 ? "No results found..." : "No approved events found."}
                         </p>
                     )}
                 </Row>

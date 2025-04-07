@@ -109,7 +109,7 @@ function BasicExample() {
               <FiCalendar size={24} />
               <span>My Events</span>
             </Nav.Link>
-            <Nav.Link
+            {/* <Nav.Link
               as={Link}
               to="attendee/event-list"
               className="d-flex align-items-center gap-2 text-light ms-3 px-3 py-2 rounded shadow-sm"
@@ -119,7 +119,7 @@ function BasicExample() {
             >
               <FiCalendar size={24} />
               <span>Events</span>
-            </Nav.Link>
+            </Nav.Link> */}
             <Nav.Link
               as={Link}
               to="attendee/notifications"

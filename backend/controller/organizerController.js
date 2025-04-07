@@ -453,3 +453,22 @@ export const updateToAttendee = async (req,res)=>{
     res.status(500).json({ error: "Server error" });
   }
 }
+export const search=async (req,res)=>{
+  try {
+      const { query } = req.query;
+      if (!query) return res.status(400).json({ error: "Query parameter is required" });
+  
+      const events = await event.find({
+        $or: [
+          { eventname: { $regex: query, $options: "i" } },
+          { category: { $regex: query, $options: "i" } },
+          { speakers: { $regex: query, $options: "i" } },
+        ],
+      });
+  
+      res.json(events);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Internal Server Error" });
+    }
+}

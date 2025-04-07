@@ -26,7 +26,7 @@ export const adminSignup = async (req, res) => {
         const hashPassword =await bcrypt.hash(password, salt);
 
         const admin =new adminModel({
-            username,
+            name:username,
             email,
             password:hashPassword,
             mobileNumber
@@ -51,7 +51,7 @@ export const adminLogin  = async (req,res)=>{
         return res.status(400).json({provide:`Please provide the role of the person properly`});
     }
     const admin = await adminModel
-  .findOne({ username: username })
+  .findOne({ name: username })
     if(!admin){
         return res.status(404).json({message:`Admin with the username ${username} not found`});
     }

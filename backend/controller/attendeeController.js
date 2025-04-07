@@ -272,7 +272,7 @@ export const search=async (req,res)=>{
     
         const events = await Event.find({
           $or: [
-            { eventName: { $regex: query, $options: "i" } }, // Case-insensitive search
+            { eventname: { $regex: query, $options: "i" } },
             { category: { $regex: query, $options: "i" } },
             { speakers: { $regex: query, $options: "i" } },
           ],

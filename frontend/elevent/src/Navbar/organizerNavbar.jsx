@@ -16,6 +16,7 @@ function BasicExample() {
   const navigate = useNavigate();
   const [organizerName,setOrganizerName]=useState("Organizer");
   const [checkLogin,setCheckLogin] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const buttonStyle = {
     backgroundColor: "#1e1e1e",
     border: "1px solid #444",
@@ -41,7 +42,23 @@ function BasicExample() {
   }catch(err){
     console.log(err);
   }
-  }
+  };
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery) return;
+
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_SERVER}/api/organizer/search`, {
+        params: { query: searchQuery },
+        withCredentials: true,
+      });
+      navigate("organizer/search-events",{ state: { searchEvents: response.data } }); // Redirect to the home page to display results
+    } catch (error) {
+      console.error("Error fetching events:", error);
+    }
+  };
+
   const getOrganizerName = async() => {
         try{
             const response  = await axios.get("http://localhost:8000/api/organizer/getName",{
@@ -66,15 +83,19 @@ function BasicExample() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Form className="d-flex me-3">
-            <Form.Control
-              type="search"
-              placeholder="Search"
-              className="me-2 bg-dark text-light"
-              aria-label="Search"
-            />
-            <Button variant="outline-light">Search</Button>
-          </Form>
+        <Form className="d-flex me-3" onSubmit={handleSearch}>
+          <Form.Control
+            type="search"
+            placeholder="Search by event, category, or artist"
+            className="me-2 bg-dark text-light"
+            aria-label="Search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <Button variant="outline-light" type="submit">
+            Search
+          </Button>
+        </Form>
           <Nav className="me-auto">
             <NavDropdown title="Location" id="basic-nav-dropdown" menuVariant="dark">
               <NavDropdown.Item href="#action/3.1">Hyderabad</NavDropdown.Item>

@@ -12,6 +12,7 @@ import NotificationDetails from '../pages/Organizer/notificationDetails.jsx'
 import MessageAdmin from '../pages/Organizer/messageAdmin.jsx';
 import UpdateToAttendee from '../pages/Organizer/updateToAttendee.jsx';
 import HomePage from '../pages/homePage.jsx';
+import SearchEvent from '../pages/Organizer/searchEvents.jsx';
 
 function organizerPathRoute(){
     return (
@@ -24,6 +25,7 @@ function organizerPathRoute(){
             <Route path="notifications" element={<NotificationList/>}/>
             <Route path="notification/:notificationId" element={<NotificationDetails/>}/>
             <Route path="messageAdmin" element={<MessageAdmin/>}/>
+            <Route path="search-events" element={<SearchEvent/>}/>
             <Route path="updateToAttendees" element={<UpdateToAttendee/>}/>
           </Routes>
       );

@@ -111,7 +111,7 @@ const Ticket = () => {
                     <h3 className="mb-3" style={{ fontWeight: "bold", textAlign: "left" }}>{event?.eventname}</h3>
                     <p style={{ textAlign: "left" }}><FaTag /> <strong>Category:</strong> {event?.category}</p>
                     <p style={{ textAlign: "left" }}><FaMapMarkerAlt /> <strong>Venue:</strong> {event?.venue}</p>
-                    <p style={{ textAlign: "left" }}><FaCalendarAlt /> <strong>Date:</strong> {event?.startDate}</p>
+                    <p style={{ textAlign: "left" }}><FaCalendarAlt /> <strong>Date:</strong> {new Date(event?.startDate).toLocaleDateString('en-GB') }</p>
                     <p style={{ textAlign: "left" }}> <FaClock /> <strong>Time:</strong> 10:00 AM </p>
                 </Col>
                 <Col md={5} className="text-center d-flex flex-column align-items-center justify-content-center">
@@ -141,7 +141,7 @@ const Ticket = () => {
                 </div>
                 <div>
                     <img
-                        src="/images/logo.png"
+                        src="https://res.cloudinary.com/danwgb4qy/image/upload/v1739710919/ele_logo_apxddy.png"
                         alt="Elevent Logo"
                         style={{ width: "80px"}}
                     />

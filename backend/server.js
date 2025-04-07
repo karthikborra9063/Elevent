@@ -31,7 +31,7 @@ app.use((req, res, next) => {
   });
 
 app.use(cors({
-    origin: 'http://localhost:5173', // Frontend URL
+    origin: ['http://localhost:5173','http://localhost:5175'], // Frontend URL
     credentials: true,               // Allow cookies to be sent
 }));
 
@@ -44,9 +44,6 @@ app.use(cookieParser());
 app.use('/api/auth',authRouter);
 app.use('/api/organizer',organizerRouter);
 app.use('/api/admin',adminRouter)
-// app.get('/api/attendee/myevent-list',(req,res)=>{
-//     console.log("Hello");
-// })
 app.use('/api/attendee',attendeeRouter);
 app.use('/api/home',homePageRouter);
 app.listen(port,()=>{
