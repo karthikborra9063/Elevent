@@ -58,7 +58,7 @@ function BasicExample() {
             <NavDropdown title="Location" id="basic-nav-dropdown" menuVariant="dark">
               <NavDropdown.Item href="#action/3.1">Hyderabad</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">Goa</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.3">Amaravati</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.3">Bengaluru</NavDropdown.Item>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
